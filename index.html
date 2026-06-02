@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0055)file:///Users/dia.park/Downloads/soomgo-worktime_2.html -->
+<!-- saved from url=(0055)file:///Users/dia.park/Downloads/soomgo-worktime_4.html -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -7,709 +7,365 @@
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
 <link href="./index_files/css2" rel="stylesheet">
+<script src="./index_files/supabase-js@2"></script>
 <style>
-  :root {
-    --bg: #F2F4F6;
-    --surface: #FFFFFF;
-    --surface2: #F8F9FA;
-    --primary: #3182F6;
-    --primary-light: #EBF3FE;
-    --primary-dark: #1B64DA;
-    --success: #00B884;
-    --success-light: #E8FBF5;
-    --danger: #F04452;
-    --danger-light: #FFF0F1;
-    --warning: #FF8C00;
-    --warning-light: #FFF5E6;
-    --text1: #191F28;
-    --text2: #4E5968;
-    --text3: #8B95A1;
-    --text4: #B0B8C1;
-    --border: #E5E8EB;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: var(--text1);
-    min-height: 100vh;
-    padding-bottom: 100px;
-  }
-
-  .inner {
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  /* TOP BAR */
-  .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .topbar .inner {
-    width: 100%;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .topbar-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text1);
-    letter-spacing: -0.3px;
-  }
-  .topbar-month {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary);
-    background: var(--primary-light);
-    padding: 4px 10px;
-    border-radius: 99px;
-  }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: center;
-    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-  }
-  .bottom-nav .inner {
-    width: 100%;
-    display: flex;
-  }
-  .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 0;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: var(--text3);
-    font-family: inherit;
-    transition: color 0.15s;
-  }
-  .nav-item.active { color: var(--primary); }
-  .nav-icon {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .nav-label { font-size: 11px; font-weight: 600; }
-
-  /* PAGES */
-  .page { display: none; }
-  .page.active { display: block; }
-  .page > .inner { padding: 20px 20px 0; }
-
-  /* SECTION */
-  .section { margin-bottom: 12px; }
-  .section-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text3);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    padding: 0 4px;
-  }
-
-  /* CARD */
-  .card {
-    background: var(--surface);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-  }
-  .card-body { padding: 20px; }
-  .card-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .card-row:last-child { border-bottom: none; }
-  .card-row-label { font-size: 15px; color: var(--text2); }
-  .card-row-value { font-size: 15px; font-weight: 600; color: var(--text1); }
-
-  /* HERO CARD */
-  .hero-card {
-    background: var(--surface);
-    border-radius: var(--radius-xl);
-    padding: 24px 20px 20px;
-    margin-bottom: 12px;
-  }
-  .hero-label { font-size: 13px; font-weight: 500; color: var(--text3); margin-bottom: 8px; }
-  .hero-value {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--text1);
-    letter-spacing: -1px;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .hero-sub { font-size: 14px; color: var(--text3); margin-bottom: 20px; }
-  .progress-track {
-    height: 6px;
-    background: var(--border);
-    border-radius: 99px;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 99px;
-    background: var(--primary);
-    transition: width 0.5s cubic-bezier(.4,0,.2,1);
-  }
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: var(--text3);
-    font-weight: 500;
-  }
-
-  /* STAT GRID */
-  .stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .stat-card {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: 18px 16px;
-  }
-  .stat-label { font-size: 12px; font-weight: 500; color: var(--text3); margin-bottom: 10px; }
-  .stat-value { font-size: 22px; font-weight: 700; color: var(--text1); letter-spacing: -0.5px; line-height: 1.1; }
-  .stat-desc { font-size: 12px; color: var(--text3); margin-top: 4px; font-weight: 500; }
-
-  /* CHIP */
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 99px;
-    gap: 4px;
-  }
-  .chip-success { background: var(--success-light); color: var(--success); }
-  .chip-danger { background: var(--danger-light); color: var(--danger); }
-  .chip-warning { background: var(--warning-light); color: var(--warning); }
-  .chip-primary { background: var(--primary-light); color: var(--primary); }
-
-  /* BUTTON */
-  .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    height: 52px;
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    font-weight: 700;
-    font-family: inherit;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    letter-spacing: -0.3px;
-  }
-  .btn:active { transform: scale(0.98); opacity: 0.85; }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-secondary {
-    background: var(--surface2);
-    color: var(--text2);
-  }
-  .btn-sm {
-    height: 34px;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0 14px;
-    border-radius: var(--radius-sm);
-    width: auto;
-    background: var(--surface2);
-    color: var(--text2);
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .btn-sm:active { opacity: 0.7; }
-
-  /* INPUT */
-  .input-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface2);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    border: 2px solid transparent;
-    transition: border-color 0.15s;
-  }
-  .input-group:focus-within { border-color: var(--primary); background: #fff; }
-  .time-input {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text1);
-    border: none;
-    background: none;
-    width: 72px;
-    text-align: center;
-    font-family: inherit;
-    letter-spacing: -0.5px;
-    outline: none;
-  }
-  .time-input::placeholder { color: var(--text4); }
-  .time-colon { font-size: 24px; font-weight: 700; color: var(--text3); }
-  .time-unit { font-size: 14px; font-weight: 600; color: var(--text3); }
-
-  /* DAY INPUT LIST */
-  .day-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-  .day-item:last-child { border-bottom: none; }
-  .day-item:first-child { border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
-  .day-item:last-child { border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
-  .day-item:only-child { border-radius: var(--radius-xl); }
-  .day-date { min-width: 56px; }
-  .day-date-main { font-size: 15px; font-weight: 700; color: var(--text1); }
-  .day-date-sub { font-size: 12px; color: var(--text3); font-weight: 500; margin-top: 2px; }
-  .day-inputs { display: flex; align-items: center; gap: 6px; flex: 1; }
-  .day-inp {
-    width: 60px;
-    height: 40px;
-    text-align: center;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
-    color: var(--text1);
-    background: var(--surface2);
-    border: 1.5px solid transparent;
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .day-inp:focus { border-color: var(--primary); background: #fff; }
-  .day-inp::placeholder { color: var(--text4); font-weight: 500; }
-  .day-inp-label { font-size: 13px; color: var(--text3); font-weight: 500; }
-
-  /* DONE ITEM */
-  .done-item {
-    display: flex;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    gap: 12px;
-  }
-  .done-item:last-child { border-bottom: none; }
-  .done-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--success);
-    flex-shrink: 0;
-  }
-  .done-info { flex: 1; }
-  .done-date { font-size: 15px; font-weight: 600; color: var(--text1); }
-  .done-time { font-size: 13px; color: var(--text3); font-weight: 500; margin-top: 2px; }
-
-  /* CALENDAR */
-  .cal-wrap { background: var(--surface); border-radius: var(--radius-xl); padding: 20px; }
-  .cal-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    margin-bottom: 8px;
-  }
-  .cal-dow {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text3);
-    padding: 4px 0;
-  }
-  .cal-dow.sun { color: var(--danger); }
-  .cal-dow.sat { color: var(--primary); }
-  .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-cell {
-    aspect-ratio: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text3);
-    cursor: default;
-    transition: all 0.15s;
-    position: relative;
-  }
-  .cal-cell.workday { cursor: pointer; }
-  .cal-cell.workday:active { transform: scale(0.92); }
-  .cal-cell.is-today { background: var(--primary); color: #fff; }
-  .cal-cell.is-logged { background: var(--success); color: #fff; }
-  .cal-cell.is-pending { background: var(--warning-light); color: var(--warning); }
-  .cal-cell.is-holiday { background: var(--danger-light); color: var(--danger); }
-  .cal-cell.is-future { background: var(--surface2); color: var(--text2); }
-  .cal-cell.is-weekend.sun { color: var(--danger); }
-  .cal-cell.is-weekend.sat { color: var(--primary); }
-  .cal-mini { font-size: 9px; font-weight: 600; margin-top: 2px; opacity: 0.85; }
-
-  /* LEGEND */
-  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); font-weight: 500; }
-  .legend-dot { width: 8px; height: 8px; border-radius: 3px; flex-shrink: 0; }
-
-  /* EMPTY */
-  .empty-state { padding: 32px 20px; text-align: center; color: var(--text3); font-size: 14px; font-weight: 500; }
-
-  /* BANNER */
-  .banner {
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.5;
-    margin-bottom: 12px;
-  }
-  .banner-info { background: var(--primary-light); color: var(--primary-dark); }
-  .banner-success { background: var(--success-light); color: #007A5A; }
-  .banner-warning { background: var(--warning-light); color: var(--warning); }
-
-  /* SAVE RESULT */
-  .save-toast {
-    position: fixed;
-    bottom: 90px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text1);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 12px 20px;
-    border-radius: 99px;
-    opacity: 0;
-    transition: all 0.25s;
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 200;
-  }
-  .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 0; }
+:root{--bg:#F2F4F6;--surface:#fff;--surface2:#F8F9FA;--primary:#3182F6;--primary-light:#EBF3FE;--primary-dark:#1B64DA;--success:#00B884;--success-light:#E8FBF5;--danger:#F04452;--danger-light:#FFF0F1;--warning:#FF8C00;--warning-light:#FFF5E6;--text1:#191F28;--text2:#4E5968;--text3:#8B95A1;--text4:#B0B8C1;--border:#E5E8EB;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text1);min-height:100vh;padding-bottom:100px}
+.inner{max-width:480px;margin:0 auto}
+.loading-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--text3);font-size:15px;font-weight:500}
+.login-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px}
+.login-logo{width:64px;height:64px;background:var(--primary);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+.login-title{font-size:24px;font-weight:700;color:var(--text1);margin-bottom:8px;letter-spacing:-.5px}
+.login-sub{font-size:15px;color:var(--text3);margin-bottom:40px;text-align:center;line-height:1.5}
+.login-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:320px;height:52px;border-radius:var(--r-md);font-size:15px;font-weight:700;font-family:inherit;border:1.5px solid var(--border);background:var(--surface);color:var(--text1);cursor:pointer;transition:all .15s;letter-spacing:-.3px}
+.login-btn:hover{background:var(--surface2)}
+.login-btn:active{transform:scale(.98)}
+.topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:center}
+.topbar .inner{width:100%;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:17px;font-weight:700;color:var(--text1);letter-spacing:-.3px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.topbar-month{font-size:13px;font-weight:600;color:var(--primary);background:var(--primary-light);padding:4px 10px;border-radius:99px}
+.topbar-avatar{width:28px;height:28px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+.topbar-avatar img{width:100%;height:100%;object-fit:cover}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.bottom-nav .inner{width:100%;display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer;border:none;background:none;color:var(--text3);font-family:inherit;transition:color .15s}
+.nav-item.active{color:var(--primary)}
+.nav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.nav-label{font-size:11px;font-weight:600}
+.page{display:none}
+.page.active{display:block}
+.page>.inner{padding:20px 20px 0}
+.section{margin-bottom:12px}
+.section-title{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;padding:0 4px}
+.card{background:var(--surface);border-radius:var(--r-xl);overflow:hidden}
+.card-row{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border)}
+.card-row:last-child{border-bottom:none}
+.card-row-label{font-size:15px;color:var(--text2)}
+.card-row-value{font-size:15px;font-weight:600;color:var(--text1)}
+.hero-card{background:var(--surface);border-radius:var(--r-xl);padding:24px 20px 20px;margin-bottom:12px}
+.hero-label{font-size:13px;font-weight:500;color:var(--text3);margin-bottom:8px}
+.hero-value{font-size:36px;font-weight:700;color:var(--text1);letter-spacing:-1px;line-height:1;margin-bottom:4px}
+.hero-sub{font-size:14px;color:var(--text3);margin-bottom:20px}
+.progress-track{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:10px}
+.progress-fill{height:100%;border-radius:99px;background:var(--primary);transition:width .5s cubic-bezier(.4,0,.2,1)}
+.progress-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--text3);font-weight:500}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-card{background:var(--surface);border-radius:var(--r-lg);padding:18px 16px}
+.stat-label{font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px}
+.stat-value{font-size:22px;font-weight:700;color:var(--text1);letter-spacing:-.5px;line-height:1.1}
+.stat-desc{font-size:12px;color:var(--text3);margin-top:4px;font-weight:500}
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px}
+.chip-success{background:var(--success-light);color:var(--success)}
+.chip-primary{background:var(--primary-light);color:var(--primary)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:52px;border-radius:var(--r-md);font-size:16px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:-.3px}
+.btn:active{transform:scale(.98);opacity:.85}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-sm{height:34px;font-size:13px;font-weight:600;padding:0 14px;border-radius:var(--r-sm);width:auto;background:var(--surface2);color:var(--text2);border:none;cursor:pointer;font-family:inherit}
+.btn-sm:active{opacity:.7}
+.day-item{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface)}
+.day-item:last-child{border-bottom:none}
+.day-item:first-child{border-radius:var(--r-xl) var(--r-xl) 0 0}
+.day-item:last-child{border-radius:0 0 var(--r-xl) var(--r-xl)}
+.day-item:only-child{border-radius:var(--r-xl)}
+.day-date{min-width:56px}
+.day-date-main{font-size:15px;font-weight:700;color:var(--text1)}
+.day-date-sub{font-size:12px;color:var(--text3);font-weight:500;margin-top:2px}
+.day-inputs{display:flex;align-items:center;gap:6px;flex:1}
+.day-inp{width:60px;height:40px;text-align:center;font-size:15px;font-weight:700;font-family:inherit;color:var(--text1);background:var(--surface2);border:1.5px solid transparent;border-radius:var(--r-sm);outline:none;transition:border-color .15s,background .15s}
+.day-inp:focus{border-color:var(--primary);background:#fff}
+.day-inp::placeholder{color:var(--text4);font-weight:500}
+.day-inp-label{font-size:13px;color:var(--text3);font-weight:500}
+.done-item{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);gap:12px}
+.done-item:last-child{border-bottom:none}
+.done-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0}
+.done-info{flex:1}
+.done-date{font-size:15px;font-weight:600;color:var(--text1)}
+.done-time{font-size:13px;color:var(--text3);font-weight:500;margin-top:2px}
+.cal-wrap{background:var(--surface);border-radius:var(--r-xl);padding:20px}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:8px}
+.cal-dow{text-align:center;font-size:12px;font-weight:600;color:var(--text3);padding:4px 0}
+.cal-dow.sun{color:var(--danger)}
+.cal-dow.sat{color:var(--primary)}
+.cal-body{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:13px;font-weight:600;color:var(--text3);cursor:default;transition:all .15s}
+.cal-cell.workday{cursor:pointer}
+.cal-cell.workday:active{transform:scale(.92)}
+.cal-cell.is-today{background:var(--primary);color:#fff}
+.cal-cell.is-logged{background:var(--success);color:#fff}
+.cal-cell.is-pending{background:var(--warning-light);color:var(--warning)}
+.cal-cell.is-holiday{background:var(--danger-light);color:var(--danger)}
+.cal-cell.is-future{background:var(--surface2);color:var(--text2)}
+.cal-cell.is-weekend.sun{color:var(--danger)}
+.cal-cell.is-weekend.sat{color:var(--primary)}
+.cal-mini{font-size:9px;font-weight:600;margin-top:2px;opacity:.85}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);font-weight:500}
+.legend-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+.empty-state{padding:32px 20px;text-align:center;color:var(--text3);font-size:14px;font-weight:500}
+.banner{border-radius:var(--r-lg);padding:14px 16px;font-size:13px;font-weight:500;line-height:1.5;margin-bottom:12px}
+.banner-info{background:var(--primary-light);color:var(--primary-dark)}
+.banner-success{background:var(--success-light);color:#007A5A}
+.save-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text1);color:#fff;font-size:14px;font-weight:600;padding:12px 20px;border-radius:99px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:200}
+.save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+::-webkit-scrollbar{width:0}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="inner">
-    <span class="topbar-title">근무시간 계산기</span>
-    <span class="topbar-month">2026년 6월</span>
+<div id="loading-screen" class="loading-screen" style="display: none;">잠시만요...</div>
+
+<div id="login-screen" class="login-screen" style="display: flex;">
+  <div class="login-logo">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
   </div>
+  <div class="login-title">근무시간 계산기</div>
+  <div class="login-sub">구글 계정으로 로그인하면<br>어느 기기에서든 확인할 수 있어요</div>
+  <button class="login-btn" onclick="signInWithGoogle()">
+    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"></path><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"></path><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"></path><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"></path></svg>
+    Google로 로그인
+  </button>
 </div>
 
-<!-- PAGES -->
-<div id="page-home" class="page active">
-<div class="inner">
-
-  <div class="hero-card section">
-    <div class="hero-label">소정근무시간 달성</div>
-    <div class="hero-value" id="hero-done">8시간 40분</div>
-    <div class="hero-sub">/ 171시간 24분 <span id="hero-chip"></span></div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width: 5%;"></div></div>
-    <div class="progress-meta">
-      <span id="pct-label">5% 달성</span>
-      <span id="remain-label">162시간 44분 남음</span>
-    </div>
-  </div>
-
-  <div class="stat-grid section">
-    <div class="stat-card">
-      <div class="stat-label">8h/일 기준 여유·부족</div>
-      <div class="stat-value" id="surplus-v"><span style="color:var(--danger)">-2시간 44분</span></div>
-      <div class="stat-desc" id="surplus-s">8h씩 해도 부족해요</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">하루 필요 근무시간</div>
-      <div class="stat-value" id="daily-v"><span style="color:var(--primary)">8시간 8분</span></div>
-      <div class="stat-desc" id="daily-s">남은 20일 기준</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">이번 달 현황</div>
-    <div class="card">
-      <div class="card-row"><span class="card-row-label">총 출근일</span><span class="card-row-value" id="stat-total">21일</span></div>
-      <div class="card-row"><span class="card-row-label">소정 기준 하루치</span><span class="card-row-value" id="stat-quota">8시간 10분</span></div>
-      <div class="card-row"><span class="card-row-label">지난 출근일</span><span class="card-row-value" id="stat-past">1일</span></div>
-      <div class="card-row"><span class="card-row-label">남은 출근일</span><span class="card-row-value" id="stat-remain">20일</span></div>
-      <div class="card-row"><span class="card-row-label">소정 기준 목표 누적</span><span class="card-row-value" id="stat-target">8시간 10분</span></div>
-    </div>
-  </div>
-
-</div><!-- /inner -->
-</div>
-
-<div id="page-input" class="page">
-<div class="inner">
-
-  <div id="input-banner" class="section"><div class="banner banner-success">✓ 이전 출근일이 모두 입력되었어요!</div></div>
-
-  <div class="section">
-    <div class="section-title" id="input-section-title">미입력 날짜</div>
-    <div id="day-input-list"><div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div></div>
-  </div>
-
-  <div style="padding-bottom: 16px; display: none;" id="save-btn-wrap">
-    <button class="btn btn-primary" onclick="saveAllLogs()">저장하기</button>
-  </div>
-
-  <div class="section">
-    <div class="section-title">입력 완료</div>
-    <div id="done-list" class="card"><div class="done-item">
-      <div class="done-dot"></div>
-      <div class="done-info">
-        <div class="done-date">6/1 월요일</div>
-        <div class="done-time">8시간 40분</div>
-      </div>
-      <button class="btn-sm" onclick="editDay(1)">수정</button>
-    </div></div>
-  </div>
-
-</div><!-- /inner -->
-</div>
-
-<div id="page-calendar" class="page">
-<div class="inner">
-
-  <div class="section">
-    <div class="banner banner-info">평일을 탭하면 <b>공휴일 지정·해제</b>가 가능해요. 지정하면 출근일에서 자동 제외돼요.</div>
-    <div class="cal-wrap">
-      <div class="cal-header" id="cal-header"><div class="cal-dow sun">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div><div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div><div class="cal-dow sat">토</div></div>
-      <div class="cal-body" id="cal-body"><div class="cal-cell"></div><div class="cal-cell is-logged workday" onclick="toggleHoliday(1)">1<div class="cal-mini">8h40m</div></div><div class="cal-cell is-today workday" onclick="toggleHoliday(2)">2</div><div class="cal-cell is-holiday workday" onclick="toggleHoliday(3)">3<div class="cal-mini">공휴</div></div><div class="cal-cell is-future workday" onclick="toggleHoliday(4)">4</div><div class="cal-cell is-future workday" onclick="toggleHoliday(5)">5</div><div class="cal-cell is-weekend sat">6</div><div class="cal-cell is-weekend sun">7</div><div class="cal-cell is-future workday" onclick="toggleHoliday(8)">8</div><div class="cal-cell is-future workday" onclick="toggleHoliday(9)">9</div><div class="cal-cell is-future workday" onclick="toggleHoliday(10)">10</div><div class="cal-cell is-future workday" onclick="toggleHoliday(11)">11</div><div class="cal-cell is-future workday" onclick="toggleHoliday(12)">12</div><div class="cal-cell is-weekend sat">13</div><div class="cal-cell is-weekend sun">14</div><div class="cal-cell is-future workday" onclick="toggleHoliday(15)">15</div><div class="cal-cell is-future workday" onclick="toggleHoliday(16)">16</div><div class="cal-cell is-future workday" onclick="toggleHoliday(17)">17</div><div class="cal-cell is-future workday" onclick="toggleHoliday(18)">18</div><div class="cal-cell is-future workday" onclick="toggleHoliday(19)">19</div><div class="cal-cell is-weekend sat">20</div><div class="cal-cell is-weekend sun">21</div><div class="cal-cell is-future workday" onclick="toggleHoliday(22)">22</div><div class="cal-cell is-future workday" onclick="toggleHoliday(23)">23</div><div class="cal-cell is-future workday" onclick="toggleHoliday(24)">24</div><div class="cal-cell is-future workday" onclick="toggleHoliday(25)">25</div><div class="cal-cell is-future workday" onclick="toggleHoliday(26)">26</div><div class="cal-cell is-weekend sat">27</div><div class="cal-cell is-weekend sun">28</div><div class="cal-cell is-future workday" onclick="toggleHoliday(29)">29</div><div class="cal-cell is-future workday" onclick="toggleHoliday(30)">30</div></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div>입력 완료</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>오늘</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>출근 예정</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--warning-light);border:1px solid var(--warning)"></div>미입력</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--danger-light);border:1px solid var(--danger)"></div>공휴일</div>
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div class="inner">
+      <span class="topbar-title">근무시간 계산기</span>
+      <div class="topbar-right">
+        <span class="topbar-month">2026년 6월</span>
+        <div class="topbar-avatar" id="user-avatar" onclick="signOut()" title="탭하면 로그아웃"></div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">월별 소정근무시간</div>
-    <div class="card">
-      <div class="card-row"><span class="card-row-label">6월 소정</span><span class="card-row-value">171시간 24분</span></div>
-      <div class="card-row"><span class="card-row-label">6월 최대</span><span class="card-row-value">222시간 48분</span></div>
-      <div class="card-row"><span class="card-row-label">7월 소정</span><span class="card-row-value">177시간 6분</span></div>
-      <div class="card-row"><span class="card-row-label">7월 최대</span><span class="card-row-value">230시간 12분</span></div>
+  <div id="page-home" class="page active"><div class="inner">
+    <div class="hero-card section">
+      <div class="hero-label">소정근무시간 달성</div>
+      <div class="hero-value" id="hero-done">0시간</div>
+      <div class="hero-sub">/ 171시간 24분 <span id="hero-chip"></span></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-meta"><span id="pct-label">0% 달성</span><span id="remain-label">171시간 24분 남음</span></div>
     </div>
-  </div>
+    <div class="stat-grid section">
+      <div class="stat-card"><div class="stat-label">8h/일 기준 여유·부족</div><div class="stat-value" id="surplus-v">—</div><div class="stat-desc" id="surplus-s">기록 입력 후 표시</div></div>
+      <div class="stat-card"><div class="stat-label">하루 필요 근무시간</div><div class="stat-value" id="daily-v">—</div><div class="stat-desc" id="daily-s">남은 출근일 기준</div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">이번 달 현황</div>
+      <div class="card">
+        <div class="card-row"><span class="card-row-label">총 출근일</span><span class="card-row-value" id="stat-total">—</span></div>
+        <div class="card-row"><span class="card-row-label">소정 기준 하루치</span><span class="card-row-value" id="stat-quota">—</span></div>
+        <div class="card-row"><span class="card-row-label">지난 출근일</span><span class="card-row-value" id="stat-past">—</span></div>
+        <div class="card-row"><span class="card-row-label">남은 출근일</span><span class="card-row-value" id="stat-remain">—</span></div>
+        <div class="card-row"><span class="card-row-label">소정 기준 목표 누적</span><span class="card-row-value" id="stat-target">—</span></div>
+      </div>
+    </div>
+  </div></div>
 
-</div><!-- /inner -->
+  <div id="page-input" class="page"><div class="inner">
+    <div id="input-banner" class="section"></div>
+    <div class="section">
+      <div class="section-title" id="input-section-title">미입력 날짜</div>
+      <div id="day-input-list"></div>
+    </div>
+    <div style="padding-bottom:16px" id="save-btn-wrap">
+      <button class="btn btn-primary" onclick="saveAllLogs()">저장하기</button>
+    </div>
+    <div class="section">
+      <div class="section-title">입력 완료</div>
+      <div id="done-list" class="card"><div class="empty-state">아직 입력된 날이 없어요</div></div>
+    </div>
+  </div></div>
+
+  <div id="page-calendar" class="page"><div class="inner">
+    <div class="section">
+      <div class="banner banner-info">평일을 탭하면 <b>공휴일 지정·해제</b>가 가능해요.</div>
+      <div class="cal-wrap">
+        <div class="cal-header" id="cal-header"></div>
+        <div class="cal-body" id="cal-body"></div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div>입력 완료</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>오늘</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>출근 예정</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--warning-light);border:1px solid var(--warning)"></div>미입력</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--danger-light);border:1px solid var(--danger)"></div>공휴일</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">월별 소정근무시간</div>
+      <div class="card">
+        <div class="card-row"><span class="card-row-label">6월 소정</span><span class="card-row-value">171시간 24분</span></div>
+        <div class="card-row"><span class="card-row-label">6월 최대</span><span class="card-row-value">222시간 48분</span></div>
+        <div class="card-row"><span class="card-row-label">7월 소정</span><span class="card-row-value">177시간 6분</span></div>
+        <div class="card-row"><span class="card-row-label">7월 최대</span><span class="card-row-value">230시간 12분</span></div>
+      </div>
+    </div>
+  </div></div>
+
+  <nav class="bottom-nav"><div class="inner">
+    <button class="nav-item active" onclick="showPage(&#39;home&#39;,this)">
+      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"></path><path d="M9 21V12h6v9"></path></svg></div>
+      <span class="nav-label">홈</span>
+    </button>
+    <button class="nav-item" onclick="showPage(&#39;input&#39;,this)">
+      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg></div>
+      <span class="nav-label">근무 입력</span>
+    </button>
+    <button class="nav-item" onclick="showPage(&#39;calendar&#39;,this)">
+      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg></div>
+      <span class="nav-label">달력</span>
+    </button>
+  </div></nav>
 </div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <div class="inner">
-    <button class="nav-item active" onclick="showPage(&#39;home&#39;, this)">
-    <div class="nav-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 12L12 3l9 9"></path><path d="M9 21V12h6v9"></path>
-      </svg>
-    </div>
-    <span class="nav-label">홈</span>
-  </button>
-  <button class="nav-item" onclick="showPage(&#39;input&#39;, this)">
-    <div class="nav-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path>
-      </svg>
-    </div>
-    <span class="nav-label">근무 입력</span>
-  </button>
-  <button class="nav-item" onclick="showPage(&#39;calendar&#39;, this)">
-    <div class="nav-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path>
-      </svg>
-    </div>
-    <span class="nav-label">달력</span>
-  </button>
-  </div><!-- /inner -->
-</nav>
 
 <div class="save-toast" id="toast"></div>
 
 <script>
+const SUPABASE_URL = 'https://aywstlyfipwkwlrpxzpj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5d3N0bHlmaXB3a3dscnB4enBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDA0MTMsImV4cCI6MjA5NTkxNjQxM30._m31bp7VfGraruYV8-mQ_et3t3MFu0abagtubqhcHAs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const REQUIRED_MIN = 171 * 60 + 24;
-const TODAY_DATE = 2;
+const TODAY_DATE = new Date().getDate();
 const DOW_LABELS = ['일','월','화','수','목','금','토'];
 
-let customHolidays = JSON.parse(localStorage.getItem('sg_holidays') || '[6]');
-let workLogs = JSON.parse(localStorage.getItem('sg_logs') || '{}');
+let currentUser = null;
+let customHolidays = [6];
+let workLogs = {};
 
-function isWeekend(d) { const w = new Date(2026,5,d).getDay(); return w===0||w===6; }
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await onLogin(session.user);
+  else show('login-screen');
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) await onLogin(session.user);
+    else if (event === 'SIGNED_OUT') { currentUser=null; workLogs={}; customHolidays=[6]; show('login-screen'); }
+  });
+}
+
+async function onLogin(user) {
+  currentUser = user;
+  const av = document.getElementById('user-avatar');
+  if (user.user_metadata?.avatar_url) av.innerHTML = `<img src="${user.user_metadata.avatar_url}">`;
+  else av.textContent = (user.email||'U')[0].toUpperCase();
+  await loadData();
+  show('app');
+  update();
+}
+
+function show(id) {
+  ['loading-screen','login-screen','app'].forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  target.style.display = id === 'login-screen' ? 'flex' : id === 'app' ? 'block' : 'flex';
+}
+
+async function signInWithGoogle() {
+  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+}
+
+async function signOut() {
+  if (!confirm('로그아웃 하시겠어요?')) return;
+  await sb.auth.signOut();
+}
+
+async function loadData() {
+  if (!currentUser) return;
+  const { data } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id);
+  workLogs = {};
+  if (data) data.forEach(r => { workLogs[r.day] = r.minutes; });
+  const saved = localStorage.getItem('sg_h_' + currentUser.id);
+  customHolidays = saved ? JSON.parse(saved) : [6];
+}
+
+async function saveLog(day, minutes) {
+  if (!currentUser) return;
+  await sb.from('work_logs').upsert({ user_id: currentUser.id, day, minutes }, { onConflict: 'user_id,day' });
+}
+
+async function deleteLog(day) {
+  if (!currentUser) return;
+  await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('day', day);
+}
+
+function persistHolidays() {
+  if (currentUser) localStorage.setItem('sg_h_' + currentUser.id, JSON.stringify(customHolidays));
+}
+
+function isWeekend(d) { const w=new Date(2026,5,d).getDay(); return w===0||w===6; }
 function isHoliday(d) { return customHolidays.includes(d); }
-function isWorkday(d) { return !isWeekend(d) && !isHoliday(d); }
+function isWorkday(d) { return !isWeekend(d)&&!isHoliday(d); }
 function getWorkdays() { const r=[]; for(let d=1;d<=30;d++) if(isWorkday(d)) r.push(d); return r; }
 function getTotalMin() { return Object.values(workLogs).reduce((s,v)=>s+v,0); }
-function persist() {
-  localStorage.setItem('sg_holidays', JSON.stringify(customHolidays));
-  localStorage.setItem('sg_logs', JSON.stringify(workLogs));
-}
-
-function toHM(min, short=false) {
-  const a = Math.abs(Math.round(min));
-  const h = Math.floor(a/60), m = a%60;
-  if (short) return m===0 ? `${h}h` : `${h}h ${m}m`;
-  return m===0 ? `${h}시간` : `${h}시간 ${m}분`;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
+function toHM(min) { const a=Math.abs(Math.round(min)),h=Math.floor(a/60),m=a%60; return m===0?`${h}시간`:`${h}시간 ${m}분`; }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
 
 function update() {
-  const workdays = getWorkdays();
-  const totalDays = workdays.length;
-  const dailyQuota = REQUIRED_MIN / totalDays;
-  const pastDays = workdays.filter(d => d < TODAY_DATE).length;
-  const remainDays = workdays.filter(d => d >= TODAY_DATE).length;
-  const logged = getTotalMin();
-  const pct = Math.min(100, Math.round((logged / REQUIRED_MIN) * 100));
-  const remainMin = REQUIRED_MIN - logged;
+  const workdays=getWorkdays(), totalDays=workdays.length;
+  const dailyQuota=REQUIRED_MIN/totalDays;
+  const pastDays=workdays.filter(d=>d<TODAY_DATE).length;
+  const remainDays=workdays.filter(d=>d>=TODAY_DATE).length;
+  const logged=getTotalMin(), pct=Math.min(100,Math.round(logged/REQUIRED_MIN*100));
+  const remainMin=REQUIRED_MIN-logged;
 
-  // Hero
-  document.getElementById('hero-done').textContent = toHM(logged);
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('pct-label').textContent = pct + '% 달성';
-  document.getElementById('remain-label').textContent = remainMin > 0 ? toHM(remainMin) + ' 남음' : '완료!';
+  document.getElementById('hero-done').textContent=toHM(logged);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('pct-label').textContent=pct+'% 달성';
+  document.getElementById('remain-label').textContent=remainMin>0?toHM(remainMin)+' 남음':'완료!';
+  const chip=document.getElementById('hero-chip');
+  if(pct>=100) chip.innerHTML='<span class="chip chip-success">✓ 달성</span>';
+  else if(pct>=70) chip.innerHTML=`<span class="chip chip-primary">${pct}%</span>`;
+  else chip.innerHTML='';
 
-  // Chip
-  const chipEl = document.getElementById('hero-chip');
-  if (pct >= 100) chipEl.innerHTML = '<span class="chip chip-success">✓ 달성</span>';
-  else if (pct >= 70) chipEl.innerHTML = `<span class="chip chip-primary">${pct}%</span>`;
-  else chipEl.innerHTML = '';
+  document.getElementById('stat-total').textContent=totalDays+'일';
+  document.getElementById('stat-quota').textContent=toHM(dailyQuota);
+  document.getElementById('stat-past').textContent=pastDays+'일';
+  document.getElementById('stat-remain').textContent=remainDays+'일';
+  document.getElementById('stat-target').textContent=toHM(dailyQuota*pastDays);
 
-  // Stats
-  document.getElementById('stat-total').textContent = totalDays + '일';
-  document.getElementById('stat-quota').textContent = toHM(dailyQuota);
-  document.getElementById('stat-past').textContent = pastDays + '일';
-  document.getElementById('stat-remain').textContent = remainDays + '일';
-  document.getElementById('stat-target').textContent = toHM(dailyQuota * pastDays);
-
-  // 여유/부족: (누적 + 남은 날 × 8h) - 소정
-  const surplusEl = document.getElementById('surplus-v');
-  const surplusS = document.getElementById('surplus-s');
-  if (logged === 0 && pastDays > 0) {
-    surplusEl.textContent = '—';
-    surplusEl.style.color = '';
-    surplusS.textContent = '기록 입력 후 표시';
-  } else {
-    const projected = logged + remainDays * 8 * 60;
-    const diff = projected - REQUIRED_MIN;
-    if (diff >= 0) {
-      surplusEl.innerHTML = `<span style="color:var(--success)">+${toHM(diff)}</span>`;
-      surplusS.textContent = '8h씩 하면 여유 있어요';
-    } else {
-      surplusEl.innerHTML = `<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`;
-      surplusS.textContent = '8h씩 해도 부족해요';
-    }
+  const sv=document.getElementById('surplus-v'), ss=document.getElementById('surplus-s');
+  if(logged===0&&pastDays>0){ sv.textContent='—'; sv.style.color=''; ss.textContent='기록 입력 후 표시'; }
+  else {
+    const diff=(logged+remainDays*480)-REQUIRED_MIN;
+    if(diff>=0){ sv.innerHTML=`<span style="color:var(--success)">+${toHM(diff)}</span>`; ss.textContent='8h씩 하면 여유 있어요'; }
+    else { sv.innerHTML=`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`; ss.textContent='8h씩 해도 부족해요'; }
   }
 
-  // 하루 필요
-  const dailyEl = document.getElementById('daily-v');
-  const dailyS = document.getElementById('daily-s');
-  if (remainDays > 0 && remainMin > 0) {
-    dailyEl.innerHTML = `<span style="color:var(--primary)">${toHM(remainMin / remainDays)}</span>`;
-    dailyS.textContent = `남은 ${remainDays}일 기준`;
-  } else if (remainMin <= 0) {
-    dailyEl.innerHTML = `<span style="color:var(--success)">달성!</span>`;
-    dailyS.textContent = '소정근무 완료';
-  } else {
-    dailyEl.textContent = '—';
-    dailyS.textContent = '기록 입력 후 표시';
-  }
+  const dv=document.getElementById('daily-v'), ds=document.getElementById('daily-s');
+  if(remainDays>0&&remainMin>0){ dv.innerHTML=`<span style="color:var(--primary)">${toHM(remainMin/remainDays)}</span>`; ds.textContent=`남은 ${remainDays}일 기준`; }
+  else if(remainMin<=0){ dv.innerHTML=`<span style="color:var(--success)">달성!</span>`; ds.textContent='소정근무 완료'; }
+  else { dv.textContent='—'; ds.textContent='기록 입력 후 표시'; }
 
-  renderInputPage();
-  renderCalendar();
-  renderDoneList();
+  renderInputPage(); renderCalendar(); renderDoneList();
 }
 
 function renderInputPage() {
-  const workdays = getWorkdays();
-  const pending = workdays.filter(d => d < TODAY_DATE && workLogs[d] === undefined);
-  const titleEl = document.getElementById('input-section-title');
-  const bannerEl = document.getElementById('input-banner');
-  const listEl = document.getElementById('day-input-list');
-  const saveBtnWrap = document.getElementById('save-btn-wrap');
-
-  if (pending.length === 0) {
-    titleEl.textContent = '미입력 날짜';
-    bannerEl.innerHTML = `<div class="banner banner-success">✓ 이전 출근일이 모두 입력되었어요!</div>`;
-    listEl.innerHTML = `<div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div>`;
-    saveBtnWrap.style.display = 'none';
-    return;
+  const workdays=getWorkdays();
+  const pending=workdays.filter(d=>d<TODAY_DATE&&workLogs[d]===undefined);
+  const titleEl=document.getElementById('input-section-title');
+  const bannerEl=document.getElementById('input-banner');
+  const listEl=document.getElementById('day-input-list');
+  const saveBtnWrap=document.getElementById('save-btn-wrap');
+  if(!pending.length){
+    titleEl.textContent='미입력 날짜';
+    bannerEl.innerHTML='<div class="banner banner-success">✓ 이전 출근일이 모두 입력되었어요!</div>';
+    listEl.innerHTML='<div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div>';
+    saveBtnWrap.style.display='none'; return;
   }
-
-  saveBtnWrap.style.display = 'block';
-  titleEl.textContent = `미입력 날짜 ${pending.length}일`;
-  bannerEl.innerHTML = `<div class="banner banner-info">출근 앱에서 확인한 날짜별 실제 근무시간을 입력해주세요.</div>`;
-
-  listEl.innerHTML = pending.map((d, i) => {
-    const dow = DOW_LABELS[new Date(2026,5,d).getDay()];
-    const ex = workLogs[d];
-    const eh = ex !== undefined ? Math.floor(ex/60) : '';
-    const em = ex !== undefined ? ex%60 : '';
-    const isFirst = i === 0;
-    const isLast = i === pending.length - 1;
-    const isOnly = pending.length === 1;
-    const rad = isOnly ? 'border-radius: var(--radius-xl)' : isFirst ? 'border-radius: var(--radius-xl) var(--radius-xl) 0 0' : isLast ? 'border-radius: 0 0 var(--radius-xl) var(--radius-xl)' : 'border-radius:0';
-    return `<div class="day-item" style="${rad}; ${!isLast ? '' : ''}">
-      <div class="day-date">
-        <div class="day-date-main">6/${d}</div>
-        <div class="day-date-sub">${dow}요일</div>
-      </div>
+  saveBtnWrap.style.display='block';
+  titleEl.textContent=`미입력 날짜 ${pending.length}일`;
+  bannerEl.innerHTML='<div class="banner banner-info">날짜별 실제 근무시간을 입력해주세요.</div>';
+  listEl.innerHTML=pending.map((d,i)=>{
+    const dow=DOW_LABELS[new Date(2026,5,d).getDay()];
+    const ex=workLogs[d], eh=ex!==undefined?Math.floor(ex/60):'', em=ex!==undefined?ex%60:'';
+    const only=pending.length===1, first=i===0, last=i===pending.length-1;
+    const rad=only?'border-radius:var(--r-xl)':first?'border-radius:var(--r-xl) var(--r-xl) 0 0':last?'border-radius:0 0 var(--r-xl) var(--r-xl)':'border-radius:0';
+    return `<div class="day-item" style="${rad}">
+      <div class="day-date"><div class="day-date-main">6/${d}</div><div class="day-date-sub">${dow}요일</div></div>
       <div class="day-inputs">
         <input class="day-inp" type="number" id="inp-h-${d}" placeholder="0" min="0" max="24" value="${eh}">
         <span class="day-inp-label">시간</span>
@@ -718,123 +374,74 @@ function renderInputPage() {
       </div>
     </div>`;
   }).join('');
-
-  window._pendingDays = pending;
+  window._pendingDays=pending;
 }
 
-function saveAllLogs() {
-  const pending = window._pendingDays || [];
-  let saved = 0;
-  for (const d of pending) {
-    const h = parseInt(document.getElementById(`inp-h-${d}`)?.value) || 0;
-    const m = parseInt(document.getElementById(`inp-m-${d}`)?.value) || 0;
-    if (h > 0 || m > 0) { workLogs[d] = h*60+m; saved++; }
+async function saveAllLogs() {
+  const pending=window._pendingDays||[]; let saved=0;
+  for(const d of pending){
+    const h=parseInt(document.getElementById(`inp-h-${d}`)?.value)||0;
+    const m=parseInt(document.getElementById(`inp-m-${d}`)?.value)||0;
+    if(h>0||m>0){ workLogs[d]=h*60+m; await saveLog(d,h*60+m); saved++; }
   }
-  persist();
-  showToast(saved > 0 ? `✓ ${saved}일 저장되었습니다` : '입력된 시간이 없어요');
+  showToast(saved>0?`✓ ${saved}일 저장되었습니다`:'입력된 시간이 없어요');
   update();
 }
 
 function renderDoneList() {
-  const el = document.getElementById('done-list');
-  const entries = Object.entries(workLogs).map(([d,m])=>({d:parseInt(d),m})).sort((a,b)=>b.d-a.d);
-  if (!entries.length) { el.innerHTML = '<div class="empty-state">아직 입력된 날이 없어요</div>'; return; }
-  el.innerHTML = entries.map(({d, m}) => {
-    const dow = DOW_LABELS[new Date(2026,5,d).getDay()];
-    return `<div class="done-item">
-      <div class="done-dot"></div>
-      <div class="done-info">
-        <div class="done-date">6/${d} ${dow}요일</div>
-        <div class="done-time">${toHM(m)}</div>
-      </div>
-      <button class="btn-sm" onclick="editDay(${d})">수정</button>
-    </div>`;
+  const el=document.getElementById('done-list');
+  const entries=Object.entries(workLogs).map(([d,m])=>({d:parseInt(d),m})).sort((a,b)=>b.d-a.d);
+  if(!entries.length){ el.innerHTML='<div class="empty-state">아직 입력된 날이 없어요</div>'; return; }
+  el.innerHTML=entries.map(({d,m})=>{
+    const dow=DOW_LABELS[new Date(2026,5,d).getDay()];
+    return `<div class="done-item"><div class="done-dot"></div><div class="done-info"><div class="done-date">6/${d} ${dow}요일</div><div class="done-time">${toHM(m)}</div></div><button class="btn-sm" onclick="editDay(${d})">수정</button></div>`;
   }).join('');
 }
 
-function editDay(d) {
-  delete workLogs[d];
-  persist(); update();
-  showPage('input', document.querySelectorAll('.nav-item')[1]);
+async function editDay(d) {
+  delete workLogs[d]; await deleteLog(d); update();
+  showPage('input',document.querySelectorAll('.nav-item')[1]);
 }
 
-function toggleHoliday(d) {
-  if (isWeekend(d)) return;
-  const idx = customHolidays.indexOf(d);
-  if (idx >= 0) {
-    customHolidays.splice(idx, 1);
-    showToast(`6/${d} 공휴일 해제`);
-  } else {
-    customHolidays.push(d);
-    if (workLogs[d] !== undefined) delete workLogs[d];
-    showToast(`6/${d} 공휴일로 지정`);
-  }
-  persist(); update();
+async function toggleHoliday(d) {
+  if(isWeekend(d)) return;
+  const idx=customHolidays.indexOf(d);
+  if(idx>=0){ customHolidays.splice(idx,1); showToast(`6/${d} 공휴일 해제`); }
+  else { customHolidays.push(d); if(workLogs[d]!==undefined){delete workLogs[d];await deleteLog(d);} showToast(`6/${d} 공휴일로 지정`); }
+  persistHolidays(); update();
 }
 
 function renderCalendar() {
-  const header = document.getElementById('cal-header');
-  const body = document.getElementById('cal-body');
-
-  header.innerHTML = DOW_LABELS.map((d,i) =>
-    `<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`
-  ).join('');
-
-  let html = '';
-  const firstDow = new Date(2026,5,1).getDay();
-  for (let i=0; i<firstDow; i++) html += `<div class="cal-cell"></div>`;
-
-  for (let d=1; d<=30; d++) {
-    const dow = new Date(2026,5,d).getDay();
-    const weekend = isWeekend(d);
-    const holiday = isHoliday(d);
-    const workday = isWorkday(d);
-    const isPast = d < TODAY_DATE;
-    const isToday = d === TODAY_DATE;
-    const hasLog = workLogs[d] !== undefined;
-
-    let cls = 'cal-cell';
-    let extra = '';
-    let onclick = '';
-
-    if (weekend) {
-      cls += ` is-weekend ${dow===0?'sun':'sat'}`;
-    } else if (holiday) {
-      cls += ' is-holiday workday';
-      extra = `<div class="cal-mini">공휴</div>`;
-      onclick = `onclick="toggleHoliday(${d})"`;
-    } else if (isToday) {
-      cls += ' is-today workday';
-      onclick = `onclick="toggleHoliday(${d})"`;
-    } else if (isPast && hasLog) {
-      cls += ' is-logged workday';
-      const h = Math.floor(workLogs[d]/60), m = workLogs[d]%60;
-      extra = `<div class="cal-mini">${h}h${m>0?m+'m':''}</div>`;
-      onclick = `onclick="toggleHoliday(${d})"`;
-    } else if (isPast && workday) {
-      cls += ' is-pending workday';
-      extra = `<div class="cal-mini">미입력</div>`;
-      onclick = `onclick="toggleHoliday(${d})"`;
-    } else if (workday) {
-      cls += ' is-future workday';
-      onclick = `onclick="toggleHoliday(${d})"`;
-    }
-
-    html += `<div class="${cls}" ${onclick}>${d}${extra}</div>`;
+  const header=document.getElementById('cal-header'), body=document.getElementById('cal-body');
+  header.innerHTML=DOW_LABELS.map((d,i)=>`<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`).join('');
+  let html='';
+  const firstDow=new Date(2026,5,1).getDay();
+  for(let i=0;i<firstDow;i++) html+=`<div class="cal-cell"></div>`;
+  for(let d=1;d<=30;d++){
+    const dow=new Date(2026,5,d).getDay();
+    const weekend=isWeekend(d),holiday=isHoliday(d),workday=isWorkday(d);
+    const isPast=d<TODAY_DATE,isToday=d===TODAY_DATE,hasLog=workLogs[d]!==undefined;
+    let cls='cal-cell',extra='',oc='';
+    if(weekend){ cls+=` is-weekend ${dow===0?'sun':'sat'}`; }
+    else if(holiday){ cls+=' is-holiday workday'; extra='<div class="cal-mini">공휴</div>'; oc=`onclick="toggleHoliday(${d})"`; }
+    else if(isToday){ cls+=' is-today workday'; oc=`onclick="toggleHoliday(${d})"`; }
+    else if(isPast&&hasLog){ cls+=' is-logged workday'; const h=Math.floor(workLogs[d]/60),m=workLogs[d]%60; extra=`<div class="cal-mini">${h}h${m>0?m+'m':''}</div>`; oc=`onclick="toggleHoliday(${d})"`; }
+    else if(isPast&&workday){ cls+=' is-pending workday'; extra='<div class="cal-mini">미입력</div>'; oc=`onclick="toggleHoliday(${d})"`; }
+    else if(workday){ cls+=' is-future workday'; oc=`onclick="toggleHoliday(${d})"`; }
+    html+=`<div class="${cls}" ${oc}>${d}${extra}</div>`;
   }
-
-  body.innerHTML = html;
+  body.innerHTML=html;
 }
 
-function showPage(name, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+function showPage(name,btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'input') renderInputPage();
+  if(name==='input') renderInputPage();
 }
 
-update();
+init();
 </script>
 
 
