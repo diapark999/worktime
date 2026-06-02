@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0055)file:///Users/dia.park/Downloads/soomgo-worktime_4.html -->
+<!-- saved from url=(0055)file:///Users/dia.park/Downloads/soomgo-worktime_5.html -->
 <html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
 <link href="./index_files/css2" rel="stylesheet">
-<script src="./index_files/supabase-js@2"></script>
+
 <style>
 :root{--bg:#F2F4F6;--surface:#fff;--surface2:#F8F9FA;--primary:#3182F6;--primary-light:#EBF3FE;--primary-dark:#1B64DA;--success:#00B884;--success-light:#E8FBF5;--danger:#F04452;--danger-light:#FFF0F1;--warning:#FF8C00;--warning-light:#FFF5E6;--text1:#191F28;--text2:#4E5968;--text3:#8B95A1;--text4:#B0B8C1;--border:#E5E8EB;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -111,7 +111,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 ::-webkit-scrollbar{width:0}
 </style>
-</head>
+<script src="./index_files/supabase-js@2"></script></head>
 <body>
 
 <div id="loading-screen" class="loading-screen" style="display: none;">잠시만요...</div>
@@ -223,9 +223,9 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 <div class="save-toast" id="toast"></div>
 
 <script>
+var sb;
 const SUPABASE_URL = 'https://aywstlyfipwkwlrpxzpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5d3N0bHlmaXB3a3dscnB4enBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDA0MTMsImV4cCI6MjA5NTkxNjQxM30._m31bp7VfGraruYV8-mQ_et3t3MFu0abagtubqhcHAs';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const REQUIRED_MIN = 171 * 60 + 24;
 const TODAY_DATE = new Date().getDate();
@@ -441,7 +441,15 @@ function showPage(name,btn) {
   if(name==='input') renderInputPage();
 }
 
-init();
+window.addEventListener("load", async () => {
+  const script = document.createElement("script");
+  script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+  document.head.appendChild(script);
+  script.onload = async () => {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    await init();
+  };
+});
 </script>
 
 
