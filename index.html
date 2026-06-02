@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#F2F4F6;--surface:#fff;--surface2:#F8F9FA;--primary:#3182F6;--primary-light:#EBF3FE;--primary-dark:#1B64DA;--success:#00B884;--success-light:#E8FBF5;--danger:#F04452;--danger-light:#FFF0F1;--warning:#FF8C00;--warning-light:#FFF5E6;--text1:#191F28;--text2:#4E5968;--text3:#8B95A1;--text4:#B0B8C1;--border:#E5E8EB;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -26,9 +26,13 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .topbar .inner{width:100%;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
 .topbar-title{font-size:17px;font-weight:700;color:var(--text1);letter-spacing:-.3px}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.topbar-month{font-size:13px;font-weight:600;color:var(--primary);background:var(--primary-light);padding:4px 10px;border-radius:99px}
 .topbar-avatar{width:28px;height:28px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
 .topbar-avatar img{width:100%;height:100%;object-fit:cover}
+.month-nav{display:flex;align-items:center;gap:8px}
+.month-nav-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
+.month-nav-btn:hover{background:var(--border)}
+.month-nav-btn:disabled{opacity:0.3;cursor:default}
+.month-label{font-size:14px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:5px 12px;border-radius:99px;min-width:80px;text-align:center}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
 .bottom-nav .inner{width:100%;display:flex}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer;border:none;background:none;color:var(--text3);font-family:inherit;transition:color .15s}
@@ -108,11 +112,11 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .banner{border-radius:var(--r-lg);padding:14px 16px;font-size:13px;font-weight:500;line-height:1.5;margin-bottom:12px}
 .banner-info{background:var(--primary-light);color:var(--primary-dark)}
 .banner-success{background:var(--success-light);color:#007A5A}
+.banner-past{background:var(--surface2);color:var(--text2)}
 .save-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text1);color:#fff;font-size:14px;font-weight:600;padding:12px 20px;border-radius:99px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:200}
 .save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 ::-webkit-scrollbar{width:0}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -135,7 +139,11 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
     <div class="inner">
       <span class="topbar-title">근무시간 계산기</span>
       <div class="topbar-right">
-        <span class="topbar-month">2026년 6월</span>
+        <div class="month-nav">
+          <button class="month-nav-btn" id="btn-prev" onclick="changeMonth(-1)">&#8249;</button>
+          <span class="month-label" id="month-label">6월</span>
+          <button class="month-nav-btn" id="btn-next" onclick="changeMonth(1)">&#8250;</button>
+        </div>
         <div class="topbar-avatar" id="user-avatar" onclick="signOut()" title="탭하면 로그아웃"></div>
       </div>
     </div>
@@ -143,11 +151,11 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 
   <div id="page-home" class="page active"><div class="inner">
     <div class="hero-card section">
-      <div class="hero-label">소정근무시간 달성</div>
+      <div class="hero-label" id="hero-label">소정근무시간 달성</div>
       <div class="hero-value" id="hero-done">0시간</div>
-      <div class="hero-sub">/ 171시간 24분 <span id="hero-chip"></span></div>
+      <div class="hero-sub" id="hero-sub">/ — <span id="hero-chip"></span></div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <div class="progress-meta"><span id="pct-label">0% 달성</span><span id="remain-label">171시간 24분 남음</span></div>
+      <div class="progress-meta"><span id="pct-label">0% 달성</span><span id="remain-label">—</span></div>
     </div>
     <div class="stat-grid section">
       <div class="stat-card"><div class="stat-label">8h/일 기준 여유·부족</div><div class="stat-value" id="surplus-v">—</div><div class="stat-desc" id="surplus-s">기록 입력 후 표시</div></div>
@@ -182,7 +190,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 
   <div id="page-calendar" class="page"><div class="inner">
     <div class="section">
-      <div class="banner banner-info">평일을 탭하면 <b>공휴일 지정·해제</b>가 가능해요.</div>
+      <div class="banner banner-info" id="cal-banner">평일을 탭하면 <b>공휴일 지정·해제</b>가 가능해요.</div>
       <div class="cal-wrap">
         <div class="cal-header" id="cal-header"></div>
         <div class="cal-body" id="cal-body"></div>
@@ -196,13 +204,8 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
       </div>
     </div>
     <div class="section">
-      <div class="section-title">월별 소정근무시간</div>
-      <div class="card">
-        <div class="card-row"><span class="card-row-label">6월 소정</span><span class="card-row-value">171시간 24분</span></div>
-        <div class="card-row"><span class="card-row-label">6월 최대</span><span class="card-row-value">222시간 48분</span></div>
-        <div class="card-row"><span class="card-row-label">7월 소정</span><span class="card-row-value">177시간 6분</span></div>
-        <div class="card-row"><span class="card-row-label">7월 최대</span><span class="card-row-value">230시간 12분</span></div>
-      </div>
+      <div class="section-title">소정근무시간</div>
+      <div class="card" id="monthly-ref"></div>
     </div>
   </div></div>
 
@@ -227,14 +230,38 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 <script>
 const SUPABASE_URL = 'https://aywstlyfipwkwlrpxzpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5d3N0bHlmaXB3a3dscnB4enBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDA0MTMsImV4cCI6MjA5NTkxNjQxM30._m31bp7VfGraruYV8-mQ_et3t3MFu0abagtubqhcHAs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const REQUIRED_MIN = 171 * 60 + 24;
-const TODAY_DATE = new Date().getDate();
+// 월별 소정근무시간 (분 단위)
+const MONTHLY_DATA = {
+  1:  { req: 168*60,      max: 230*60+12 },
+  2:  { req: 136*60,      max: 208*60    },
+  3:  { req: 168*60,      max: 230*60+12 },
+  4:  { req: 171*60+24,   max: 222*60+48 },
+  5:  { req: 144*60,      max: 230*60+12 },
+  6:  { req: 171*60+24,   max: 222*60+48 },
+  7:  { req: 177*60+6,    max: 230*60+12 },
+  8:  { req: 160*60,      max: 230*60+12 },
+  9:  { req: 160*60,      max: 222*60+48 },
+  10: { req: 160*60,      max: 230*60+12 },
+  11: { req: 168*60,      max: 222*60+48 },
+  12: { req: 176*60,      max: 230*60+12 },
+};
+
 const DOW_LABELS = ['일','월','화','수','목','금','토'];
+const TODAY = new Date();
+const TODAY_YEAR = TODAY.getFullYear();
+const TODAY_MONTH = TODAY.getMonth() + 1;
+const TODAY_DATE = TODAY.getDate();
 
 let currentUser = null;
-let customHolidays = [6];
-let workLogs = {};
+let currentYear = TODAY_YEAR;
+let currentMonth = TODAY_MONTH;
+let allLogs = {}; // key: "YYYY-M-D"
+let allHolidays = {}; // key: "YYYY-M" -> [days]
+
+function logKey(y, m, d) { return `${y}-${m}-${d}`; }
+function holKey(y, m) { return `${y}-${m}`; }
 
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
@@ -242,7 +269,7 @@ async function init() {
   else show('login-screen');
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) await onLogin(session.user);
-    else if (event === 'SIGNED_OUT') { currentUser=null; workLogs={}; customHolidays=[6]; show('login-screen'); }
+    else if (event === 'SIGNED_OUT') { currentUser=null; allLogs={}; allHolidays={}; show('login-screen'); }
   });
 }
 
@@ -258,11 +285,10 @@ async function onLogin(user) {
 
 function show(id) {
   ['loading-screen','login-screen','app'].forEach(s => {
-    const el = document.getElementById(s);
-    el.style.display = 'none';
+    document.getElementById(s).style.display = 'none';
   });
-  const target = document.getElementById(id);
-  target.style.display = id === 'login-screen' ? 'flex' : id === 'app' ? 'block' : 'flex';
+  const t = document.getElementById(id);
+  t.style.display = id === 'login-screen' ? 'flex' : 'block';
 }
 
 async function signInWithGoogle() {
@@ -277,96 +303,181 @@ async function signOut() {
 async function loadData() {
   if (!currentUser) return;
   const { data } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id);
-  workLogs = {};
-  if (data) data.forEach(r => { workLogs[r.day] = r.minutes; });
+  allLogs = {};
+  if (data) data.forEach(r => { allLogs[r.log_key] = r.minutes; });
   const saved = localStorage.getItem('sg_h_' + currentUser.id);
-  customHolidays = saved ? JSON.parse(saved) : [6];
-}
-
-async function saveLog(day, minutes) {
-  if (!currentUser) return;
-  await sb.from('work_logs').upsert({ user_id: currentUser.id, day, minutes }, { onConflict: 'user_id,day' });
-}
-
-async function deleteLog(day) {
-  if (!currentUser) return;
-  await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('day', day);
+  allHolidays = saved ? JSON.parse(saved) : {};
+  // 기본 공휴일
+  if (!allHolidays['2026-6']) allHolidays['2026-6'] = [6];
 }
 
 function persistHolidays() {
-  if (currentUser) localStorage.setItem('sg_h_' + currentUser.id, JSON.stringify(customHolidays));
+  if (currentUser) localStorage.setItem('sg_h_' + currentUser.id, JSON.stringify(allHolidays));
 }
 
-function isWeekend(d) { const w=new Date(2026,5,d).getDay(); return w===0||w===6; }
-function isHoliday(d) { return customHolidays.includes(d); }
-function isWorkday(d) { return !isWeekend(d)&&!isHoliday(d); }
-function getWorkdays() { const r=[]; for(let d=1;d<=30;d++) if(isWorkday(d)) r.push(d); return r; }
-function getTotalMin() { return Object.values(workLogs).reduce((s,v)=>s+v,0); }
+function getHolidays() { return allHolidays[holKey(currentYear, currentMonth)] || []; }
+function getDaysInMonth(y, m) { return new Date(y, m, 0).getDate(); }
+function isWeekend(d) { const w = new Date(currentYear, currentMonth-1, d).getDay(); return w===0||w===6; }
+function isHoliday(d) { return getHolidays().includes(d); }
+function isWorkday(d) { return !isWeekend(d) && !isHoliday(d); }
+function isCurrentMonth() { return currentYear === TODAY_YEAR && currentMonth === TODAY_MONTH; }
+function isPastMonth() { return currentYear < TODAY_YEAR || (currentYear === TODAY_YEAR && currentMonth < TODAY_MONTH); }
+
+function getWorkdays() {
+  const days = [], total = getDaysInMonth(currentYear, currentMonth);
+  for (let d=1; d<=total; d++) if (isWorkday(d)) days.push(d);
+  return days;
+}
+
+function getMonthLogs() {
+  const logs = {};
+  const total = getDaysInMonth(currentYear, currentMonth);
+  for (let d=1; d<=total; d++) {
+    const k = logKey(currentYear, currentMonth, d);
+    if (allLogs[k] !== undefined) logs[d] = allLogs[k];
+  }
+  return logs;
+}
+
+function getTotalMin() { return Object.values(getMonthLogs()).reduce((s,v)=>s+v, 0); }
 function toHM(min) { const a=Math.abs(Math.round(min)),h=Math.floor(a/60),m=a%60; return m===0?`${h}시간`:`${h}시간 ${m}분`; }
 function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
 
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+  if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+  update();
+}
+
 function update() {
-  const workdays=getWorkdays(), totalDays=workdays.length;
-  const dailyQuota=REQUIRED_MIN/totalDays;
-  const pastDays=workdays.filter(d=>d<TODAY_DATE).length;
-  const remainDays=workdays.filter(d=>d>=TODAY_DATE).length;
-  const logged=getTotalMin(), pct=Math.min(100,Math.round(logged/REQUIRED_MIN*100));
-  const remainMin=REQUIRED_MIN-logged;
+  const monthData = MONTHLY_DATA[currentMonth];
+  const REQUIRED_MIN = monthData ? monthData.req : 0;
+  const workdays = getWorkdays();
+  const totalDays = workdays.length;
+  const dailyQuota = totalDays > 0 ? REQUIRED_MIN / totalDays : 0;
+  const isCurrent = isCurrentMonth();
+  const isPast = isPastMonth();
 
-  document.getElementById('hero-done').textContent=toHM(logged);
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('pct-label').textContent=pct+'% 달성';
-  document.getElementById('remain-label').textContent=remainMin>0?toHM(remainMin)+' 남음':'완료!';
-  const chip=document.getElementById('hero-chip');
-  if(pct>=100) chip.innerHTML='<span class="chip chip-success">✓ 달성</span>';
-  else if(pct>=70) chip.innerHTML=`<span class="chip chip-primary">${pct}%</span>`;
-  else chip.innerHTML='';
+  const todayD = isCurrent ? TODAY_DATE : (isPast ? getDaysInMonth(currentYear, currentMonth)+1 : 1);
+  const pastDays = workdays.filter(d => d < todayD).length;
+  const remainDays = workdays.filter(d => d >= todayD).length;
+  const logged = getTotalMin();
+  const pct = REQUIRED_MIN > 0 ? Math.min(100, Math.round(logged/REQUIRED_MIN*100)) : 0;
+  const remainMin = REQUIRED_MIN - logged;
 
-  document.getElementById('stat-total').textContent=totalDays+'일';
-  document.getElementById('stat-quota').textContent=toHM(dailyQuota);
-  document.getElementById('stat-past').textContent=pastDays+'일';
-  document.getElementById('stat-remain').textContent=remainDays+'일';
-  document.getElementById('stat-target').textContent=toHM(dailyQuota*pastDays);
+  // 상단 월 표시
+  document.getElementById('month-label').textContent = `${currentMonth}월`;
+  document.getElementById('btn-prev').disabled = (currentYear <= 2026 && currentMonth <= 1);
+  document.getElementById('btn-next').disabled = (currentYear >= 2026 && currentMonth >= 12);
 
-  const sv=document.getElementById('surplus-v'), ss=document.getElementById('surplus-s');
-  if(logged===0&&pastDays>0){ sv.textContent='—'; sv.style.color=''; ss.textContent='기록 입력 후 표시'; }
-  else {
-    const diff=(logged+remainDays*480)-REQUIRED_MIN;
-    if(diff>=0){ sv.innerHTML=`<span style="color:var(--success)">+${toHM(diff)}</span>`; ss.textContent='8h씩 하면 여유 있어요'; }
-    else { sv.innerHTML=`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`; ss.textContent='8h씩 해도 부족해요'; }
+  // Hero
+  document.getElementById('hero-label').textContent = `${currentYear}년 ${currentMonth}월 소정근무시간`;
+  document.getElementById('hero-done').textContent = toHM(logged);
+  document.getElementById('hero-sub').innerHTML = `/ ${toHM(REQUIRED_MIN)} <span id="hero-chip"></span>`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('pct-label').textContent = pct + '% 달성';
+  document.getElementById('remain-label').textContent = remainMin > 0 ? toHM(remainMin) + ' 남음' : '완료!';
+
+  const chip = document.getElementById('hero-chip');
+  if (chip) {
+    if (pct >= 100) chip.innerHTML = '<span class="chip chip-success">✓ 달성</span>';
+    else if (pct >= 70) chip.innerHTML = `<span class="chip chip-primary">${pct}%</span>`;
+    else chip.innerHTML = '';
   }
 
-  const dv=document.getElementById('daily-v'), ds=document.getElementById('daily-s');
-  if(remainDays>0&&remainMin>0){ dv.innerHTML=`<span style="color:var(--primary)">${toHM(remainMin/remainDays)}</span>`; ds.textContent=`남은 ${remainDays}일 기준`; }
-  else if(remainMin<=0){ dv.innerHTML=`<span style="color:var(--success)">달성!</span>`; ds.textContent='소정근무 완료'; }
-  else { dv.textContent='—'; ds.textContent='기록 입력 후 표시'; }
+  // Stats
+  document.getElementById('stat-total').textContent = totalDays + '일';
+  document.getElementById('stat-quota').textContent = toHM(dailyQuota);
+  document.getElementById('stat-past').textContent = pastDays + '일';
+  document.getElementById('stat-remain').textContent = remainDays + '일';
+  document.getElementById('stat-target').textContent = toHM(dailyQuota * pastDays);
 
-  renderInputPage(); renderCalendar(); renderDoneList();
+  // 여유/부족
+  const sv = document.getElementById('surplus-v'), ss = document.getElementById('surplus-s');
+  if (isPast) {
+    const diff = logged - REQUIRED_MIN;
+    if (diff >= 0) { sv.innerHTML=`<span style="color:var(--success)">+${toHM(diff)}</span>`; ss.textContent='소정 초과 달성'; }
+    else { sv.innerHTML=`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`; ss.textContent='소정 미달'; }
+  } else if (isCurrent) {
+    if (logged === 0 && pastDays > 0) { sv.textContent='—'; sv.style.color=''; ss.textContent='기록 입력 후 표시'; }
+    else {
+      const diff = (logged + remainDays*480) - REQUIRED_MIN;
+      if (diff >= 0) { sv.innerHTML=`<span style="color:var(--success)">+${toHM(diff)}</span>`; ss.textContent='8h씩 하면 여유 있어요'; }
+      else { sv.innerHTML=`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`; ss.textContent='8h씩 해도 부족해요'; }
+    }
+  } else {
+    sv.textContent = '—'; sv.style.color = ''; ss.textContent = '아직 시작 전';
+  }
+
+  // 하루 필요
+  const dv = document.getElementById('daily-v'), ds = document.getElementById('daily-s');
+  if (isPast) {
+    dv.textContent = '종료'; dv.style.color = 'var(--text3)'; ds.textContent = '지난 달';
+  } else if (isCurrent && remainDays > 0 && remainMin > 0) {
+    dv.innerHTML = `<span style="color:var(--primary)">${toHM(remainMin/remainDays)}</span>`; ds.textContent = `남은 ${remainDays}일 기준`;
+  } else if (remainMin <= 0) {
+    dv.innerHTML = `<span style="color:var(--success)">달성!</span>`; ds.textContent = '소정근무 완료';
+  } else {
+    dv.textContent = '—'; ds.textContent = '기록 입력 후 표시';
+  }
+
+  // 달력 소정 참고
+  const ref = document.getElementById('monthly-ref');
+  ref.innerHTML = Object.entries(MONTHLY_DATA).map(([m, d]) =>
+    `<div class="card-row" style="${parseInt(m)===currentMonth?'background:var(--primary-light)':''}">
+      <span class="card-row-label" style="${parseInt(m)===currentMonth?'color:var(--primary);font-weight:600':''}">2026년 ${m}월</span>
+      <span class="card-row-value" style="${parseInt(m)===currentMonth?'color:var(--primary)':''}">${toHM(d.req)}</span>
+    </div>`
+  ).join('');
+
+  renderInputPage();
+  renderCalendar();
+  renderDoneList();
 }
 
 function renderInputPage() {
-  const workdays=getWorkdays();
-  const pending=workdays.filter(d=>d<TODAY_DATE&&workLogs[d]===undefined);
-  const titleEl=document.getElementById('input-section-title');
-  const bannerEl=document.getElementById('input-banner');
-  const listEl=document.getElementById('day-input-list');
-  const saveBtnWrap=document.getElementById('save-btn-wrap');
-  if(!pending.length){
-    titleEl.textContent='미입력 날짜';
-    bannerEl.innerHTML='<div class="banner banner-success">✓ 이전 출근일이 모두 입력되었어요!</div>';
-    listEl.innerHTML='<div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div>';
-    saveBtnWrap.style.display='none'; return;
+  const workdays = getWorkdays();
+  const monthLogs = getMonthLogs();
+  const isCurrent = isCurrentMonth();
+  const isPast = isPastMonth();
+  const todayD = isCurrent ? TODAY_DATE : (isPast ? getDaysInMonth(currentYear, currentMonth)+1 : 0);
+
+  const titleEl = document.getElementById('input-section-title');
+  const bannerEl = document.getElementById('input-banner');
+  const listEl = document.getElementById('day-input-list');
+  const saveBtnWrap = document.getElementById('save-btn-wrap');
+
+  if (!isCurrent && !isPast) {
+    titleEl.textContent = '미입력 날짜';
+    bannerEl.innerHTML = '<div class="banner banner-past">아직 시작되지 않은 달이에요.</div>';
+    listEl.innerHTML = '<div class="card"><div class="empty-state">미래 달은 입력할 수 없어요</div></div>';
+    saveBtnWrap.style.display = 'none';
+    return;
   }
-  saveBtnWrap.style.display='block';
-  titleEl.textContent=`미입력 날짜 ${pending.length}일`;
-  bannerEl.innerHTML='<div class="banner banner-info">날짜별 실제 근무시간을 입력해주세요.</div>';
-  listEl.innerHTML=pending.map((d,i)=>{
-    const dow=DOW_LABELS[new Date(2026,5,d).getDay()];
-    const ex=workLogs[d], eh=ex!==undefined?Math.floor(ex/60):'', em=ex!==undefined?ex%60:'';
-    const only=pending.length===1, first=i===0, last=i===pending.length-1;
-    const rad=only?'border-radius:var(--r-xl)':first?'border-radius:var(--r-xl) var(--r-xl) 0 0':last?'border-radius:0 0 var(--r-xl) var(--r-xl)':'border-radius:0';
+
+  const pending = workdays.filter(d => d < todayD && monthLogs[d] === undefined);
+
+  if (!pending.length) {
+    titleEl.textContent = '미입력 날짜';
+    bannerEl.innerHTML = '<div class="banner banner-success">✓ 모든 출근일이 입력되었어요!</div>';
+    listEl.innerHTML = '<div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div>';
+    saveBtnWrap.style.display = 'none';
+    return;
+  }
+
+  saveBtnWrap.style.display = 'block';
+  titleEl.textContent = `미입력 날짜 ${pending.length}일`;
+  bannerEl.innerHTML = '<div class="banner banner-info">날짜별 실제 근무시간을 입력해주세요.</div>';
+  listEl.innerHTML = pending.map((d, i) => {
+    const dow = DOW_LABELS[new Date(currentYear, currentMonth-1, d).getDay()];
+    const ex = monthLogs[d];
+    const eh = ex !== undefined ? Math.floor(ex/60) : '';
+    const em = ex !== undefined ? ex%60 : '';
+    const only = pending.length===1, first = i===0, last = i===pending.length-1;
+    const rad = only?'border-radius:var(--r-xl)':first?'border-radius:var(--r-xl) var(--r-xl) 0 0':last?'border-radius:0 0 var(--r-xl) var(--r-xl)':'border-radius:0';
     return `<div class="day-item" style="${rad}">
-      <div class="day-date"><div class="day-date-main">6/${d}</div><div class="day-date-sub">${dow}요일</div></div>
+      <div class="day-date"><div class="day-date-main">${currentMonth}/${d}</div><div class="day-date-sub">${dow}요일</div></div>
       <div class="day-inputs">
         <input class="day-inp" type="number" id="inp-h-${d}" placeholder="0" min="0" max="24" value="${eh}">
         <span class="day-inp-label">시간</span>
@@ -375,74 +486,109 @@ function renderInputPage() {
       </div>
     </div>`;
   }).join('');
-  window._pendingDays=pending;
+  window._pendingDays = pending;
 }
 
 async function saveAllLogs() {
-  const pending=window._pendingDays||[]; let saved=0;
-  for(const d of pending){
-    const h=parseInt(document.getElementById(`inp-h-${d}`)?.value)||0;
-    const m=parseInt(document.getElementById(`inp-m-${d}`)?.value)||0;
-    if(h>0||m>0){ workLogs[d]=h*60+m; await saveLog(d,h*60+m); saved++; }
+  const pending = window._pendingDays || []; let saved = 0;
+  for (const d of pending) {
+    const h = parseInt(document.getElementById(`inp-h-${d}`)?.value)||0;
+    const m = parseInt(document.getElementById(`inp-m-${d}`)?.value)||0;
+    if (h>0||m>0) {
+      const k = logKey(currentYear, currentMonth, d);
+      allLogs[k] = h*60+m;
+      await sb.from('work_logs').upsert(
+        { user_id: currentUser.id, log_key: k, day: d, month: currentMonth, year: currentYear, minutes: h*60+m },
+        { onConflict: 'user_id,log_key' }
+      );
+      saved++;
+    }
   }
-  showToast(saved>0?`✓ ${saved}일 저장되었습니다`:'입력된 시간이 없어요');
+  showToast(saved>0 ? `✓ ${saved}일 저장되었습니다` : '입력된 시간이 없어요');
   update();
 }
 
 function renderDoneList() {
-  const el=document.getElementById('done-list');
-  const entries=Object.entries(workLogs).map(([d,m])=>({d:parseInt(d),m})).sort((a,b)=>b.d-a.d);
-  if(!entries.length){ el.innerHTML='<div class="empty-state">아직 입력된 날이 없어요</div>'; return; }
-  el.innerHTML=entries.map(({d,m})=>{
-    const dow=DOW_LABELS[new Date(2026,5,d).getDay()];
-    return `<div class="done-item"><div class="done-dot"></div><div class="done-info"><div class="done-date">6/${d} ${dow}요일</div><div class="done-time">${toHM(m)}</div></div><button class="btn-sm" onclick="editDay(${d})">수정</button></div>`;
+  const el = document.getElementById('done-list');
+  const monthLogs = getMonthLogs();
+  const entries = Object.entries(monthLogs).map(([d,m])=>({d:parseInt(d),m})).sort((a,b)=>b.d-a.d);
+  if (!entries.length) { el.innerHTML = '<div class="empty-state">아직 입력된 날이 없어요</div>'; return; }
+  el.innerHTML = entries.map(({d,m}) => {
+    const dow = DOW_LABELS[new Date(currentYear, currentMonth-1, d).getDay()];
+    return `<div class="done-item">
+      <div class="done-dot"></div>
+      <div class="done-info"><div class="done-date">${currentMonth}/${d} ${dow}요일</div><div class="done-time">${toHM(m)}</div></div>
+      <button class="btn-sm" onclick="editDay(${d})">수정</button>
+    </div>`;
   }).join('');
 }
 
 async function editDay(d) {
-  delete workLogs[d]; await deleteLog(d); update();
-  showPage('input',document.querySelectorAll('.nav-item')[1]);
+  const k = logKey(currentYear, currentMonth, d);
+  delete allLogs[k];
+  await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('log_key', k);
+  update();
+  showPage('input', document.querySelectorAll('.nav-item')[1]);
 }
 
 async function toggleHoliday(d) {
-  if(isWeekend(d)) return;
-  const idx=customHolidays.indexOf(d);
-  if(idx>=0){ customHolidays.splice(idx,1); showToast(`6/${d} 공휴일 해제`); }
-  else { customHolidays.push(d); if(workLogs[d]!==undefined){delete workLogs[d];await deleteLog(d);} showToast(`6/${d} 공휴일로 지정`); }
-  persistHolidays(); update();
+  if (isWeekend(d)) return;
+  const hk = holKey(currentYear, currentMonth);
+  if (!allHolidays[hk]) allHolidays[hk] = [];
+  const idx = allHolidays[hk].indexOf(d);
+  if (idx >= 0) { allHolidays[hk].splice(idx,1); showToast(`${currentMonth}/${d} 공휴일 해제`); }
+  else {
+    allHolidays[hk].push(d);
+    const k = logKey(currentYear, currentMonth, d);
+    if (allLogs[k] !== undefined) {
+      delete allLogs[k];
+      await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('log_key', k);
+    }
+    showToast(`${currentMonth}/${d} 공휴일로 지정`);
+  }
+  persistHolidays();
+  update();
 }
 
 function renderCalendar() {
-  const header=document.getElementById('cal-header'), body=document.getElementById('cal-body');
-  header.innerHTML=DOW_LABELS.map((d,i)=>`<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`).join('');
-  let html='';
-  const firstDow=new Date(2026,5,1).getDay();
-  for(let i=0;i<firstDow;i++) html+=`<div class="cal-cell"></div>`;
-  for(let d=1;d<=30;d++){
-    const dow=new Date(2026,5,d).getDay();
-    const weekend=isWeekend(d),holiday=isHoliday(d),workday=isWorkday(d);
-    const isPast=d<TODAY_DATE,isToday=d===TODAY_DATE,hasLog=workLogs[d]!==undefined;
-    let cls='cal-cell',extra='',oc='';
-    if(weekend){ cls+=` is-weekend ${dow===0?'sun':'sat'}`; }
-    else if(holiday){ cls+=' is-holiday workday'; extra='<div class="cal-mini">공휴</div>'; oc=`onclick="toggleHoliday(${d})"`; }
-    else if(isToday){ cls+=' is-today workday'; oc=`onclick="toggleHoliday(${d})"`; }
-    else if(isPast&&hasLog){ cls+=' is-logged workday'; const h=Math.floor(workLogs[d]/60),m=workLogs[d]%60; extra=`<div class="cal-mini">${h}h${m>0?m+'m':''}</div>`; oc=`onclick="toggleHoliday(${d})"`; }
-    else if(isPast&&workday){ cls+=' is-pending workday'; extra='<div class="cal-mini">미입력</div>'; oc=`onclick="toggleHoliday(${d})"`; }
-    else if(workday){ cls+=' is-future workday'; oc=`onclick="toggleHoliday(${d})"`; }
+  const header = document.getElementById('cal-header');
+  const body = document.getElementById('cal-body');
+  const monthLogs = getMonthLogs();
+  const isCurrent = isCurrentMonth();
+  const isPast = isPastMonth();
+  const todayD = isCurrent ? TODAY_DATE : (isPast ? getDaysInMonth(currentYear, currentMonth)+1 : 0);
+
+  header.innerHTML = DOW_LABELS.map((d,i)=>`<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`).join('');
+
+  let html = '';
+  const firstDow = new Date(currentYear, currentMonth-1, 1).getDay();
+  const totalDays = getDaysInMonth(currentYear, currentMonth);
+  for (let i=0; i<firstDow; i++) html += `<div class="cal-cell"></div>`;
+
+  for (let d=1; d<=totalDays; d++) {
+    const dow = new Date(currentYear, currentMonth-1, d).getDay();
+    const weekend=isWeekend(d), holiday=isHoliday(d), workday=isWorkday(d);
+    const isPastDay = d < todayD, isToday = isCurrent && d===TODAY_DATE, hasLog = monthLogs[d]!==undefined;
+    let cls='cal-cell', extra='', oc='';
+    if (weekend) { cls+=` is-weekend ${dow===0?'sun':'sat'}`; }
+    else if (holiday) { cls+=' is-holiday workday'; extra='<div class="cal-mini">공휴</div>'; oc=`onclick="toggleHoliday(${d})"`; }
+    else if (isToday) { cls+=' is-today workday'; oc=`onclick="toggleHoliday(${d})"`; }
+    else if (isPastDay && hasLog) { cls+=' is-logged workday'; const h=Math.floor(monthLogs[d]/60),m=monthLogs[d]%60; extra=`<div class="cal-mini">${h}h${m>0?m+'m':''}</div>`; oc=`onclick="toggleHoliday(${d})"`; }
+    else if (isPastDay && workday) { cls+=' is-pending workday'; extra='<div class="cal-mini">미입력</div>'; oc=`onclick="toggleHoliday(${d})"`; }
+    else if (workday) { cls+=' is-future workday'; oc=`onclick="toggleHoliday(${d})"`; }
     html+=`<div class="${cls}" ${oc}>${d}${extra}</div>`;
   }
-  body.innerHTML=html;
+  body.innerHTML = html;
 }
 
-function showPage(name,btn) {
+function showPage(name, btn) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
-  if(name==='input') renderInputPage();
+  if (name==='input') renderInputPage();
 }
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
