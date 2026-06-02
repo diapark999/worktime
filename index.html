@@ -112,6 +112,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 ::-webkit-scrollbar{width:0}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -224,7 +225,6 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 <div class="save-toast" id="toast"></div>
 
 <script>
-var sb;
 const SUPABASE_URL = 'https://aywstlyfipwkwlrpxzpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5d3N0bHlmaXB3a3dscnB4enBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDA0MTMsImV4cCI6MjA5NTkxNjQxM30._m31bp7VfGraruYV8-mQ_et3t3MFu0abagtubqhcHAs';
 
@@ -442,15 +442,8 @@ function showPage(name,btn) {
   if(name==='input') renderInputPage();
 }
 
-window.addEventListener("load", async () => {
-  const script = document.createElement("script");
-  script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-  document.head.appendChild(script);
-  script.onload = async () => {
-    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    await init();
-  };
-});
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
