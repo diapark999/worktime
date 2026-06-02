@@ -589,7 +589,14 @@ function showPage(name, btn) {
   if (name==='input') renderInputPage();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', async () => {
+  // 모바일 사파리: URL hash에서 세션 토큰 처리
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    await sb.auth.getSession();
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+  init();
+});
 </script>
 </body>
 </html>
