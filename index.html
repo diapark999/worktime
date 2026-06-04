@@ -376,10 +376,7 @@ function show(id) {
 
 async function signInWithGoogle() {
   const redirectTo = window.location.href.split('#')[0];
-  const res = await fetch(SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo), {
-    headers: { 'apikey': SUPABASE_ANON_KEY }
-  });
-  window.location.href = res.url || SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
+  window.location.href = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
 }
 
 async function signOut() {
