@@ -117,7 +117,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 ::-webkit-scrollbar{width:0}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 <body>
 
@@ -265,12 +265,32 @@ function logKey(y, m, d) { return `${y}-${m}-${d}`; }
 function holKey(y, m) { return `${y}-${m}`; }
 
 async function init() {
+  // 세션 수동 복원
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     await onLogin(session.user);
-  } else {
-    show('login-screen');
+    return;
   }
+
+  // getSession 실패시 localStorage에서 직접 복원 시도
+  try {
+    const raw = localStorage.getItem('sb-aywstlyfipwkwlrpxzpj-auth-token');
+    if (raw) {
+      const stored = JSON.parse(raw);
+      if (stored?.access_token) {
+        const { data, error } = await sb.auth.setSession({
+          access_token: stored.access_token,
+          refresh_token: stored.refresh_token
+        });
+        if (data?.user && !error) {
+          await onLogin(data.user);
+          return;
+        }
+      }
+    }
+  } catch(e) {}
+
+  show('login-screen');
 
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
@@ -597,7 +617,7 @@ function showPage(name, btn) {
   if (name==='input') renderInputPage();
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('load', async () => {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { flowType: 'pkce', storage: localStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
   });
