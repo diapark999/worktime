@@ -264,7 +264,7 @@ let allHolidays = {}; // key: "YYYY-M" -> [days]
 function logKey(y, m, d) { return `${y}-${m}-${d}`; }
 function holKey(y, m) { return `${y}-${m}`; }
 
-async function init() { {
+async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     await onLogin(session.user);
