@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{--bg:#F2F4F6;--surface:#fff;--surface2:#F8F9FA;--primary:#3182F6;--primary-light:#EBF3FE;--primary-dark:#1B64DA;--success:#00B884;--success-light:#E8FBF5;--danger:#F04452;--danger-light:#FFF0F1;--warning:#FF8C00;--warning-light:#FFF5E6;--text1:#191F28;--text2:#4E5968;--text3:#8B95A1;--text4:#B0B8C1;--border:#E5E8EB;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -230,7 +230,6 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 <script>
 const SUPABASE_URL = 'https://aywstlyfipwkwlrpxzpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5d3N0bHlmaXB3a3dscnB4enBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDA0MTMsImV4cCI6MjA5NTkxNjQxM30._m31bp7VfGraruYV8-mQ_et3t3MFu0abagtubqhcHAs';
-let sb;
 
 // 월별 소정근무시간 (분 단위)
 const MONTHLY_DATA = {
@@ -263,14 +262,98 @@ let allHolidays = {}; // key: "YYYY-M" -> [days]
 function logKey(y, m, d) { return `${y}-${m}-${d}`; }
 function holKey(y, m) { return `${y}-${m}`; }
 
-async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) await onLogin(session.user);
-  else show('login-screen');
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) await onLogin(session.user);
-    else if (event === 'SIGNED_OUT') { currentUser=null; allLogs={}; allHolidays={}; show('login-screen'); }
+// Supabase REST API 직접 호출
+async function sbFetch(path, options={}) {
+  const token = localStorage.getItem('sg_token');
+  const res = await fetch(SUPABASE_URL + path, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + (token || SUPABASE_ANON_KEY),
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || '',
+      ...(options.headers||{})
+    }
   });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('sbFetch error:', res.status, err);
+    return null;
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function sbSelect(table, filters={}) {
+  let qs = Object.entries(filters).map(([k,v])=>`${k}=eq.${encodeURIComponent(v)}`).join('&');
+  return await sbFetch(`/rest/v1/${table}?${qs}&select=*`);
+}
+
+async function sbUpsert(table, data) {
+  return await sbFetch(`/rest/v1/${table}`, {
+    method: 'POST',
+    prefer: 'resolution=merge-duplicates',
+    body: JSON.stringify(data)
+  });
+}
+
+async function sbDelete(table, filters={}) {
+  let qs = Object.entries(filters).map(([k,v])=>`${k}=eq.${encodeURIComponent(v)}`).join('&');
+  return await sbFetch(`/rest/v1/${table}?${qs}`, { method: 'DELETE' });
+}
+
+async function init() {
+  // URL hash에서 access_token 처리 (OAuth 리디렉션)
+  const hash = window.location.hash;
+  if (hash && hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.replace('#',''));
+    const token = params.get('access_token');
+    const refresh = params.get('refresh_token');
+    if (token) {
+      localStorage.setItem('sg_token', token);
+      if (refresh) localStorage.setItem('sg_refresh', refresh);
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }
+
+  const token = localStorage.getItem('sg_token');
+  if (token) {
+    // 토큰으로 유저 정보 가져오기
+    const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    if (res.ok) {
+      const user = await res.json();
+      await onLogin(user);
+      return;
+    } else {
+      // 토큰 만료 - refresh 시도
+      const refresh = localStorage.getItem('sg_refresh');
+      if (refresh) {
+        const rRes = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refresh })
+        });
+        if (rRes.ok) {
+          const rData = await rRes.json();
+          localStorage.setItem('sg_token', rData.access_token);
+          if (rData.refresh_token) localStorage.setItem('sg_refresh', rData.refresh_token);
+          const user = await (await fetch(SUPABASE_URL + '/auth/v1/user', {
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + rData.access_token }
+          })).json();
+          await onLogin(user);
+          return;
+        }
+      }
+      localStorage.removeItem('sg_token');
+      localStorage.removeItem('sg_refresh');
+    }
+  }
+  show('login-screen');
 }
 
 async function onLogin(user) {
@@ -292,22 +375,28 @@ function show(id) {
 }
 
 async function signInWithGoogle() {
-  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+  const redirectTo = window.location.href.split('#')[0];
+  const res = await fetch(SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo), {
+    headers: { 'apikey': SUPABASE_ANON_KEY }
+  });
+  window.location.href = res.url || SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
 }
 
 async function signOut() {
   if (!confirm('로그아웃 하시겠어요?')) return;
-  await sb.auth.signOut();
+  localStorage.removeItem('sg_token');
+  localStorage.removeItem('sg_refresh');
+  currentUser = null; allLogs = {}; allHolidays = {};
+  show('login-screen');
 }
 
 async function loadData() {
   if (!currentUser) return;
-  const { data } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id);
+  const data = await sbSelect('work_logs', { user_id: currentUser.id });
   allLogs = {};
-  if (data) data.forEach(r => { allLogs[r.log_key] = r.minutes; });
+  if (data) data.forEach(r => { if (r.log_key) allLogs[r.log_key] = r.minutes; });
   const saved = localStorage.getItem('sg_h_' + currentUser.id);
   allHolidays = saved ? JSON.parse(saved) : {};
-  // 기본 공휴일
   if (!allHolidays['2026-6']) allHolidays['2026-6'] = [6];
 }
 
@@ -497,10 +586,7 @@ async function saveAllLogs() {
     if (h>0||m>0) {
       const k = logKey(currentYear, currentMonth, d);
       allLogs[k] = h*60+m;
-      await sb.from('work_logs').upsert(
-        { user_id: currentUser.id, log_key: k, day: d, month: currentMonth, year: currentYear, minutes: h*60+m },
-        { onConflict: 'user_id,log_key' }
-      );
+      await sbUpsert('work_logs', { user_id: currentUser.id, log_key: k, day: d, month: currentMonth, year: currentYear, minutes: h*60+m });
       saved++;
     }
   }
@@ -526,7 +612,7 @@ function renderDoneList() {
 async function editDay(d) {
   const k = logKey(currentYear, currentMonth, d);
   delete allLogs[k];
-  await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('log_key', k);
+  await sbDelete('work_logs', { user_id: currentUser.id, log_key: k });
   update();
   showPage('input', document.querySelectorAll('.nav-item')[1]);
 }
@@ -542,7 +628,7 @@ async function toggleHoliday(d) {
     const k = logKey(currentYear, currentMonth, d);
     if (allLogs[k] !== undefined) {
       delete allLogs[k];
-      await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('log_key', k);
+      await sbDelete('work_logs', { user_id: currentUser.id, log_key: k });
     }
     showToast(`${currentMonth}/${d} 공휴일로 지정`);
   }
@@ -590,10 +676,8 @@ function showPage(name, btn) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   // 모바일 사파리: URL hash에서 세션 토큰 처리
   if (window.location.hash && window.location.hash.includes('access_token')) {
-    await sb.auth.getSession();
     window.history.replaceState(null, '', window.location.pathname);
   }
   init();
