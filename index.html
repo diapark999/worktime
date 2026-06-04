@@ -5,34 +5,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>근무시간 계산기</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root{--bg:#F2F4F6;--surface:#fff;--surface2:#F8F9FA;--primary:#3182F6;--primary-light:#EBF3FE;--primary-dark:#1B64DA;--success:#00B884;--success-light:#E8FBF5;--danger:#F04452;--danger-light:#FFF0F1;--warning:#FF8C00;--warning-light:#FFF5E6;--text1:#191F28;--text2:#4E5968;--text3:#8B95A1;--text4:#B0B8C1;--border:#E5E8EB;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text1);min-height:100vh;padding-bottom:100px}
 .inner{max-width:480px;margin:0 auto}
-.loading-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--text3);font-size:15px;font-weight:500}
-.login-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px}
-.login-logo{width:64px;height:64px;background:var(--primary);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:24px}
-.login-title{font-size:24px;font-weight:700;color:var(--text1);margin-bottom:8px;letter-spacing:-.5px}
-.login-sub{font-size:15px;color:var(--text3);margin-bottom:40px;text-align:center;line-height:1.5}
-.login-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:320px;height:52px;border-radius:var(--r-md);font-size:15px;font-weight:700;font-family:inherit;border:1.5px solid var(--border);background:var(--surface);color:var(--text1);cursor:pointer;transition:all .15s;letter-spacing:-.3px}
-.login-btn:hover{background:var(--surface2)}
-.login-btn:active{transform:scale(.98)}
 .topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:center}
 .topbar .inner{width:100%;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
 .topbar-title{font-size:17px;font-weight:700;color:var(--text1);letter-spacing:-.3px}
-.topbar-right{display:flex;align-items:center;gap:8px}
-.topbar-avatar{width:28px;height:28px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
-.topbar-avatar img{width:100%;height:100%;object-fit:cover}
 .month-nav{display:flex;align-items:center;gap:8px}
-.month-nav-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
+.month-nav-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s;line-height:1}
 .month-nav-btn:hover{background:var(--border)}
 .month-nav-btn:disabled{opacity:0.3;cursor:default}
-.month-label{font-size:14px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:5px 12px;border-radius:99px;min-width:80px;text-align:center}
+.month-label{font-size:14px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:5px 12px;border-radius:99px;min-width:60px;text-align:center}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
 .bottom-nav .inner{width:100%;display:flex}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer;border:none;background:none;color:var(--text3);font-family:inherit;transition:color .15s}
@@ -64,7 +50,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px}
 .chip-success{background:var(--success-light);color:var(--success)}
 .chip-primary{background:var(--primary-light);color:var(--primary)}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:52px;border-radius:var(--r-md);font-size:16px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:-.3px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;border-radius:var(--r-md);font-size:16px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:-.3px}
 .btn:active{transform:scale(.98);opacity:.85}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-sm{height:34px;font-size:13px;font-weight:600;padding:0 14px;border-radius:var(--r-sm);width:auto;background:var(--surface2);color:var(--text2);border:none;cursor:pointer;font-family:inherit}
@@ -95,8 +81,8 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .cal-dow.sat{color:var(--primary)}
 .cal-body{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:13px;font-weight:600;color:var(--text3);cursor:default;transition:all .15s}
-.cal-cell.workday{cursor:pointer}
-.cal-cell.workday:active{transform:scale(.92)}
+.cal-cell.clickable{cursor:pointer}
+.cal-cell.clickable:active{transform:scale(.92)}
 .cal-cell.is-today{background:var(--primary);color:#fff}
 .cal-cell.is-logged{background:var(--success);color:#fff}
 .cal-cell.is-pending{background:var(--warning-light);color:var(--warning)}
@@ -120,508 +106,337 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 </head>
 <body>
 
-<div id="loading-screen" class="loading-screen">잠시만요...</div>
-
-<div id="login-screen" class="login-screen">
-  <div class="login-logo">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+<div class="topbar">
+  <div class="inner">
+    <span class="topbar-title">근무시간 계산기</span>
+    <div class="month-nav">
+      <button class="month-nav-btn" id="btn-prev" onclick="changeMonth(-1)">&#8249;</button>
+      <span class="month-label" id="month-label">6월</span>
+      <button class="month-nav-btn" id="btn-next" onclick="changeMonth(1)">&#8250;</button>
+    </div>
   </div>
-  <div class="login-title">근무시간 계산기</div>
-  <div class="login-sub">구글 계정으로 로그인하면<br>어느 기기에서든 확인할 수 있어요</div>
-  <button class="login-btn" onclick="signInWithGoogle()">
-    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-    Google로 로그인
+</div>
+
+<div id="page-home" class="page active"><div class="inner">
+  <div class="hero-card section">
+    <div class="hero-label" id="hero-label">소정근무시간 달성</div>
+    <div class="hero-value" id="hero-done">0시간</div>
+    <div class="hero-sub" id="hero-sub">/ —</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-meta"><span id="pct-label">0% 달성</span><span id="remain-label">—</span></div>
+  </div>
+  <div class="stat-grid section">
+    <div class="stat-card"><div class="stat-label">8h/일 기준 여유·부족</div><div class="stat-value" id="surplus-v">—</div><div class="stat-desc" id="surplus-s">기록 입력 후 표시</div></div>
+    <div class="stat-card"><div class="stat-label">하루 필요 근무시간</div><div class="stat-value" id="daily-v">—</div><div class="stat-desc" id="daily-s">남은 출근일 기준</div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">이번 달 현황</div>
+    <div class="card">
+      <div class="card-row"><span class="card-row-label">총 출근일</span><span class="card-row-value" id="stat-total">—</span></div>
+      <div class="card-row"><span class="card-row-label">소정 기준 하루치</span><span class="card-row-value" id="stat-quota">—</span></div>
+      <div class="card-row"><span class="card-row-label">지난 출근일</span><span class="card-row-value" id="stat-past">—</span></div>
+      <div class="card-row"><span class="card-row-label">남은 출근일</span><span class="card-row-value" id="stat-remain">—</span></div>
+      <div class="card-row"><span class="card-row-label">소정 기준 목표 누적</span><span class="card-row-value" id="stat-target">—</span></div>
+    </div>
+  </div>
+</div></div>
+
+<div id="page-input" class="page"><div class="inner">
+  <div id="input-banner" class="section"></div>
+  <div class="section">
+    <div class="section-title" id="input-section-title">미입력 날짜</div>
+    <div id="day-input-list"></div>
+  </div>
+  <div style="padding-bottom:16px" id="save-btn-wrap">
+    <button class="btn btn-primary" onclick="saveAllLogs()">저장하기</button>
+  </div>
+  <div class="section">
+    <div class="section-title">입력 완료</div>
+    <div id="done-list" class="card"><div class="empty-state">아직 입력된 날이 없어요</div></div>
+  </div>
+</div></div>
+
+<div id="page-calendar" class="page"><div class="inner">
+  <div class="section">
+    <div class="banner banner-info">평일을 탭하면 <b>공휴일 지정·해제</b>가 가능해요.</div>
+    <div class="cal-wrap">
+      <div class="cal-header" id="cal-header"></div>
+      <div class="cal-body" id="cal-body"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div>입력 완료</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>오늘</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>출근 예정</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--warning-light);border:1px solid var(--warning)"></div>미입력</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--danger-light);border:1px solid var(--danger)"></div>공휴일</div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">소정근무시간</div>
+    <div class="card" id="monthly-ref"></div>
+  </div>
+</div></div>
+
+<nav class="bottom-nav"><div class="inner">
+  <button class="nav-item active" onclick="showPage('home',this)">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg></div>
+    <span class="nav-label">홈</span>
   </button>
-</div>
-
-<div id="app" style="display:none">
-  <div class="topbar">
-    <div class="inner">
-      <span class="topbar-title">근무시간 계산기</span>
-      <div class="topbar-right">
-        <div class="month-nav">
-          <button class="month-nav-btn" id="btn-prev" onclick="changeMonth(-1)">&#8249;</button>
-          <span class="month-label" id="month-label">6월</span>
-          <button class="month-nav-btn" id="btn-next" onclick="changeMonth(1)">&#8250;</button>
-        </div>
-        <div class="topbar-avatar" id="user-avatar" onclick="signOut()" title="탭하면 로그아웃"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="page-home" class="page active"><div class="inner">
-    <div class="hero-card section">
-      <div class="hero-label" id="hero-label">소정근무시간 달성</div>
-      <div class="hero-value" id="hero-done">0시간</div>
-      <div class="hero-sub" id="hero-sub">/ — <span id="hero-chip"></span></div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <div class="progress-meta"><span id="pct-label">0% 달성</span><span id="remain-label">—</span></div>
-    </div>
-    <div class="stat-grid section">
-      <div class="stat-card"><div class="stat-label">8h/일 기준 여유·부족</div><div class="stat-value" id="surplus-v">—</div><div class="stat-desc" id="surplus-s">기록 입력 후 표시</div></div>
-      <div class="stat-card"><div class="stat-label">하루 필요 근무시간</div><div class="stat-value" id="daily-v">—</div><div class="stat-desc" id="daily-s">남은 출근일 기준</div></div>
-    </div>
-    <div class="section">
-      <div class="section-title">이번 달 현황</div>
-      <div class="card">
-        <div class="card-row"><span class="card-row-label">총 출근일</span><span class="card-row-value" id="stat-total">—</span></div>
-        <div class="card-row"><span class="card-row-label">소정 기준 하루치</span><span class="card-row-value" id="stat-quota">—</span></div>
-        <div class="card-row"><span class="card-row-label">지난 출근일</span><span class="card-row-value" id="stat-past">—</span></div>
-        <div class="card-row"><span class="card-row-label">남은 출근일</span><span class="card-row-value" id="stat-remain">—</span></div>
-        <div class="card-row"><span class="card-row-label">소정 기준 목표 누적</span><span class="card-row-value" id="stat-target">—</span></div>
-      </div>
-    </div>
-  </div></div>
-
-  <div id="page-input" class="page"><div class="inner">
-    <div id="input-banner" class="section"></div>
-    <div class="section">
-      <div class="section-title" id="input-section-title">미입력 날짜</div>
-      <div id="day-input-list"></div>
-    </div>
-    <div style="padding-bottom:16px" id="save-btn-wrap">
-      <button class="btn btn-primary" onclick="saveAllLogs()">저장하기</button>
-    </div>
-    <div class="section">
-      <div class="section-title">입력 완료</div>
-      <div id="done-list" class="card"><div class="empty-state">아직 입력된 날이 없어요</div></div>
-    </div>
-  </div></div>
-
-  <div id="page-calendar" class="page"><div class="inner">
-    <div class="section">
-      <div class="banner banner-info" id="cal-banner">평일을 탭하면 <b>공휴일 지정·해제</b>가 가능해요.</div>
-      <div class="cal-wrap">
-        <div class="cal-header" id="cal-header"></div>
-        <div class="cal-body" id="cal-body"></div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div>입력 완료</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>오늘</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>출근 예정</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--warning-light);border:1px solid var(--warning)"></div>미입력</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--danger-light);border:1px solid var(--danger)"></div>공휴일</div>
-        </div>
-      </div>
-    </div>
-    <div class="section">
-      <div class="section-title">소정근무시간</div>
-      <div class="card" id="monthly-ref"></div>
-    </div>
-  </div></div>
-
-  <nav class="bottom-nav"><div class="inner">
-    <button class="nav-item active" onclick="showPage('home',this)">
-      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg></div>
-      <span class="nav-label">홈</span>
-    </button>
-    <button class="nav-item" onclick="showPage('input',this)">
-      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
-      <span class="nav-label">근무 입력</span>
-    </button>
-    <button class="nav-item" onclick="showPage('calendar',this)">
-      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
-      <span class="nav-label">달력</span>
-    </button>
-  </div></nav>
-</div>
+  <button class="nav-item" onclick="showPage('input',this)">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+    <span class="nav-label">근무 입력</span>
+  </button>
+  <button class="nav-item" onclick="showPage('calendar',this)">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+    <span class="nav-label">달력</span>
+  </button>
+</div></nav>
 
 <div class="save-toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = 'https://aywstlyfipwkwlrpxzpj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5d3N0bHlmaXB3a3dscnB4enBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDA0MTMsImV4cCI6MjA5NTkxNjQxM30._m31bp7VfGraruYV8-mQ_et3t3MFu0abagtubqhcHAs';
-
-// 월별 소정근무시간 (분 단위)
 const MONTHLY_DATA = {
-  1:  { req: 168*60,      max: 230*60+12 },
-  2:  { req: 136*60,      max: 208*60    },
-  3:  { req: 168*60,      max: 230*60+12 },
-  4:  { req: 171*60+24,   max: 222*60+48 },
-  5:  { req: 144*60,      max: 230*60+12 },
-  6:  { req: 171*60+24,   max: 222*60+48 },
-  7:  { req: 177*60+6,    max: 230*60+12 },
-  8:  { req: 160*60,      max: 230*60+12 },
-  9:  { req: 160*60,      max: 222*60+48 },
-  10: { req: 160*60,      max: 230*60+12 },
-  11: { req: 168*60,      max: 222*60+48 },
-  12: { req: 176*60,      max: 230*60+12 },
+  1:{req:168*60,max:230*60+12}, 2:{req:136*60,max:208*60},
+  3:{req:168*60,max:230*60+12}, 4:{req:171*60+24,max:222*60+48},
+  5:{req:144*60,max:230*60+12}, 6:{req:171*60+24,max:222*60+48},
+  7:{req:177*60+6,max:230*60+12}, 8:{req:160*60,max:230*60+12},
+  9:{req:160*60,max:222*60+48}, 10:{req:160*60,max:230*60+12},
+  11:{req:168*60,max:222*60+48}, 12:{req:176*60,max:230*60+12}
 };
 
-const DOW_LABELS = ['일','월','화','수','목','금','토'];
-const TODAY = new Date();
-const TODAY_YEAR = TODAY.getFullYear();
-const TODAY_MONTH = TODAY.getMonth() + 1;
-const TODAY_DATE = TODAY.getDate();
+const DOW = ['일','월','화','수','목','금','토'];
+const NOW = new Date();
+const TY = NOW.getFullYear(), TM = NOW.getMonth()+1, TD = NOW.getDate();
 
-let currentUser = null;
-let currentYear = TODAY_YEAR;
-let currentMonth = TODAY_MONTH;
-let allLogs = {}; // key: "YYYY-M-D"
-let allHolidays = {}; // key: "YYYY-M" -> [days]
+let cYear = TY, cMonth = TM;
 
-function logKey(y, m, d) { return `${y}-${m}-${d}`; }
-function holKey(y, m) { return `${y}-${m}`; }
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
 
-async function init() {
-  // 세션 수동 복원
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    await onLogin(session.user);
-    return;
-  }
+function logsKey() { return `wt_logs_${cYear}_${cMonth}`; }
+function holsKey() { return `wt_hols_${cYear}_${cMonth}`; }
 
-  // getSession 실패시 localStorage에서 직접 복원 시도
-  try {
-    const raw = localStorage.getItem('sb-aywstlyfipwkwlrpxzpj-auth-token');
-    if (raw) {
-      const stored = JSON.parse(raw);
-      if (stored?.access_token) {
-        const { data, error } = await sb.auth.setSession({
-          access_token: stored.access_token,
-          refresh_token: stored.refresh_token
-        });
-        if (data?.user && !error) {
-          await onLogin(data.user);
-          return;
-        }
-      }
-    }
-  } catch(e) {}
+function getLogs() { return lsGet(logsKey()) || {}; }
+function getHols() { return lsGet(holsKey()) || (cYear===2026&&cMonth===6 ? [6] : []); }
+function saveLogs(v) { lsSet(logsKey(), v); }
+function saveHols(v) { lsSet(holsKey(), v); }
 
-  show('login-screen');
-
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      await onLogin(session.user);
-    } else if (event === 'SIGNED_OUT') {
-      currentUser = null; allLogs = {}; allHolidays = {};
-      show('login-screen');
-    }
-  });
-}
-
-async function onLogin(user) {
-  currentUser = user;
-  const av = document.getElementById('user-avatar');
-  if (user.user_metadata?.avatar_url) av.innerHTML = `<img src="${user.user_metadata.avatar_url}">`;
-  else av.textContent = (user.email||'U')[0].toUpperCase();
-  await loadData();
-  show('app');
-  update();
-}
-
-function show(id) {
-  ['loading-screen','login-screen','app'].forEach(s => {
-    document.getElementById(s).style.display = 'none';
-  });
-  const t = document.getElementById(id);
-  t.style.display = id === 'login-screen' ? 'flex' : 'block';
-}
-
-async function signInWithGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.href.split('#')[0] }
-  });
-}
-
-async function signOut() {
-  if (!confirm('로그아웃 하시겠어요?')) return;
-  await sb.auth.signOut();
-}
-
-async function loadData() {
-  if (!currentUser) return;
-  const { data } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id);
-  allLogs = {};
-  if (data) data.forEach(r => { if (r.log_key) allLogs[r.log_key] = r.minutes; });
-  const saved = localStorage.getItem('sg_h_' + currentUser.id);
-  allHolidays = saved ? JSON.parse(saved) : {};
-  if (!allHolidays['2026-6']) allHolidays['2026-6'] = [6];
-}
-
-function persistHolidays() {
-  if (currentUser) localStorage.setItem('sg_h_' + currentUser.id, JSON.stringify(allHolidays));
-}
-
-function getHolidays() { return allHolidays[holKey(currentYear, currentMonth)] || []; }
-function getDaysInMonth(y, m) { return new Date(y, m, 0).getDate(); }
-function isWeekend(d) { const w = new Date(currentYear, currentMonth-1, d).getDay(); return w===0||w===6; }
-function isHoliday(d) { return getHolidays().includes(d); }
-function isWorkday(d) { return !isWeekend(d) && !isHoliday(d); }
-function isCurrentMonth() { return currentYear === TODAY_YEAR && currentMonth === TODAY_MONTH; }
-function isPastMonth() { return currentYear < TODAY_YEAR || (currentYear === TODAY_YEAR && currentMonth < TODAY_MONTH); }
+function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
+function isWeekend(d) { const w=new Date(cYear,cMonth-1,d).getDay(); return w===0||w===6; }
+function isHoliday(d) { return getHols().includes(d); }
+function isWorkday(d) { return !isWeekend(d)&&!isHoliday(d); }
+function isCurMonth() { return cYear===TY&&cMonth===TM; }
+function isPastMonth() { return cYear<TY||(cYear===TY&&cMonth<TM); }
 
 function getWorkdays() {
-  const days = [], total = getDaysInMonth(currentYear, currentMonth);
-  for (let d=1; d<=total; d++) if (isWorkday(d)) days.push(d);
-  return days;
+  const r=[], total=daysInMonth(cYear,cMonth);
+  for(let d=1;d<=total;d++) if(isWorkday(d)) r.push(d);
+  return r;
 }
 
-function getMonthLogs() {
-  const logs = {};
-  const total = getDaysInMonth(currentYear, currentMonth);
-  for (let d=1; d<=total; d++) {
-    const k = logKey(currentYear, currentMonth, d);
-    if (allLogs[k] !== undefined) logs[d] = allLogs[k];
-  }
-  return logs;
+function toHM(min) {
+  const a=Math.abs(Math.round(min)), h=Math.floor(a/60), m=a%60;
+  return m===0?`${h}시간`:`${h}시간 ${m}분`;
 }
 
-function getTotalMin() { return Object.values(getMonthLogs()).reduce((s,v)=>s+v, 0); }
-function toHM(min) { const a=Math.abs(Math.round(min)),h=Math.floor(a/60),m=a%60; return m===0?`${h}시간`:`${h}시간 ${m}분`; }
-function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
 
 function changeMonth(dir) {
-  currentMonth += dir;
-  if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-  if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+  cMonth+=dir;
+  if(cMonth>12){cMonth=1;cYear++;}
+  if(cMonth<1){cMonth=12;cYear--;}
   update();
 }
 
 function update() {
-  const monthData = MONTHLY_DATA[currentMonth];
-  const REQUIRED_MIN = monthData ? monthData.req : 0;
+  const mData = MONTHLY_DATA[cMonth];
+  const REQ = mData ? mData.req : 0;
   const workdays = getWorkdays();
-  const totalDays = workdays.length;
-  const dailyQuota = totalDays > 0 ? REQUIRED_MIN / totalDays : 0;
-  const isCurrent = isCurrentMonth();
-  const isPast = isPastMonth();
+  const total = workdays.length;
+  const quota = total>0 ? REQ/total : 0;
+  const isCur = isCurMonth(), isPast = isPastMonth();
+  const todayD = isCur ? TD : isPast ? daysInMonth(cYear,cMonth)+1 : 1;
+  const pastDays = workdays.filter(d=>d<todayD).length;
+  const remainDays = workdays.filter(d=>d>=todayD).length;
+  const logs = getLogs();
+  const logged = Object.values(logs).reduce((s,v)=>s+v,0);
+  const pct = REQ>0 ? Math.min(100,Math.round(logged/REQ*100)) : 0;
+  const remainMin = REQ - logged;
 
-  const todayD = isCurrent ? TODAY_DATE : (isPast ? getDaysInMonth(currentYear, currentMonth)+1 : 1);
-  const pastDays = workdays.filter(d => d < todayD).length;
-  const remainDays = workdays.filter(d => d >= todayD).length;
-  const logged = getTotalMin();
-  const pct = REQUIRED_MIN > 0 ? Math.min(100, Math.round(logged/REQUIRED_MIN*100)) : 0;
-  const remainMin = REQUIRED_MIN - logged;
+  document.getElementById('month-label').textContent = `${cMonth}월`;
+  document.getElementById('btn-prev').disabled = cYear<=2026&&cMonth<=1;
+  document.getElementById('btn-next').disabled = cYear>=2026&&cMonth>=12;
 
-  // 상단 월 표시
-  document.getElementById('month-label').textContent = `${currentMonth}월`;
-  document.getElementById('btn-prev').disabled = (currentYear <= 2026 && currentMonth <= 1);
-  document.getElementById('btn-next').disabled = (currentYear >= 2026 && currentMonth >= 12);
-
-  // Hero
-  document.getElementById('hero-label').textContent = `${currentYear}년 ${currentMonth}월 소정근무시간`;
+  document.getElementById('hero-label').textContent = `${cYear}년 ${cMonth}월 소정근무시간`;
   document.getElementById('hero-done').textContent = toHM(logged);
-  document.getElementById('hero-sub').innerHTML = `/ ${toHM(REQUIRED_MIN)} <span id="hero-chip"></span>`;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('pct-label').textContent = pct + '% 달성';
-  document.getElementById('remain-label').textContent = remainMin > 0 ? toHM(remainMin) + ' 남음' : '완료!';
+  document.getElementById('hero-sub').textContent = `/ ${toHM(REQ)}`;
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('pct-label').textContent = pct+'% 달성';
+  document.getElementById('remain-label').textContent = remainMin>0 ? toHM(remainMin)+' 남음' : '완료!';
 
-  const chip = document.getElementById('hero-chip');
-  if (chip) {
-    if (pct >= 100) chip.innerHTML = '<span class="chip chip-success">✓ 달성</span>';
-    else if (pct >= 70) chip.innerHTML = `<span class="chip chip-primary">${pct}%</span>`;
-    else chip.innerHTML = '';
-  }
+  document.getElementById('stat-total').textContent = total+'일';
+  document.getElementById('stat-quota').textContent = toHM(quota);
+  document.getElementById('stat-past').textContent = pastDays+'일';
+  document.getElementById('stat-remain').textContent = remainDays+'일';
+  document.getElementById('stat-target').textContent = toHM(quota*pastDays);
 
-  // Stats
-  document.getElementById('stat-total').textContent = totalDays + '일';
-  document.getElementById('stat-quota').textContent = toHM(dailyQuota);
-  document.getElementById('stat-past').textContent = pastDays + '일';
-  document.getElementById('stat-remain').textContent = remainDays + '일';
-  document.getElementById('stat-target').textContent = toHM(dailyQuota * pastDays);
-
-  // 여유/부족
-  const sv = document.getElementById('surplus-v'), ss = document.getElementById('surplus-s');
-  if (isPast) {
-    const diff = logged - REQUIRED_MIN;
-    if (diff >= 0) { sv.innerHTML=`<span style="color:var(--success)">+${toHM(diff)}</span>`; ss.textContent='소정 초과 달성'; }
-    else { sv.innerHTML=`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`; ss.textContent='소정 미달'; }
-  } else if (isCurrent) {
-    if (logged === 0 && pastDays > 0) { sv.textContent='—'; sv.style.color=''; ss.textContent='기록 입력 후 표시'; }
+  const sv=document.getElementById('surplus-v'), ss=document.getElementById('surplus-s');
+  if(isPast) {
+    const diff=logged-REQ;
+    sv.innerHTML=diff>=0?`<span style="color:var(--success)">+${toHM(diff)}</span>`:`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`;
+    ss.textContent=diff>=0?'소정 초과 달성':'소정 미달';
+  } else if(isCur) {
+    if(logged===0&&pastDays>0){sv.textContent='—';sv.style.color='';ss.textContent='기록 입력 후 표시';}
     else {
-      const diff = (logged + remainDays*480) - REQUIRED_MIN;
-      if (diff >= 0) { sv.innerHTML=`<span style="color:var(--success)">+${toHM(diff)}</span>`; ss.textContent='8h씩 하면 여유 있어요'; }
-      else { sv.innerHTML=`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`; ss.textContent='8h씩 해도 부족해요'; }
+      const diff=(logged+remainDays*480)-REQ;
+      sv.innerHTML=diff>=0?`<span style="color:var(--success)">+${toHM(diff)}</span>`:`<span style="color:var(--danger)">-${toHM(Math.abs(diff))}</span>`;
+      ss.textContent=diff>=0?'8h씩 하면 여유 있어요':'8h씩 해도 부족해요';
     }
-  } else {
-    sv.textContent = '—'; sv.style.color = ''; ss.textContent = '아직 시작 전';
-  }
+  } else { sv.textContent='—';sv.style.color='';ss.textContent='아직 시작 전'; }
 
-  // 하루 필요
-  const dv = document.getElementById('daily-v'), ds = document.getElementById('daily-s');
-  if (isPast) {
-    dv.textContent = '종료'; dv.style.color = 'var(--text3)'; ds.textContent = '지난 달';
-  } else if (isCurrent && remainDays > 0 && remainMin > 0) {
-    dv.innerHTML = `<span style="color:var(--primary)">${toHM(remainMin/remainDays)}</span>`; ds.textContent = `남은 ${remainDays}일 기준`;
-  } else if (remainMin <= 0) {
-    dv.innerHTML = `<span style="color:var(--success)">달성!</span>`; ds.textContent = '소정근무 완료';
-  } else {
-    dv.textContent = '—'; ds.textContent = '기록 입력 후 표시';
-  }
+  const dv=document.getElementById('daily-v'), ds=document.getElementById('daily-s');
+  if(isPast){dv.textContent='종료';dv.style.color='var(--text3)';ds.textContent='지난 달';}
+  else if(isCur&&remainDays>0&&remainMin>0){dv.innerHTML=`<span style="color:var(--primary)">${toHM(remainMin/remainDays)}</span>`;ds.textContent=`남은 ${remainDays}일 기준`;}
+  else if(remainMin<=0){dv.innerHTML=`<span style="color:var(--success)">달성!</span>`;ds.textContent='소정근무 완료';}
+  else{dv.textContent='—';ds.textContent='기록 입력 후 표시';}
 
-  // 달력 소정 참고
-  const ref = document.getElementById('monthly-ref');
-  ref.innerHTML = Object.entries(MONTHLY_DATA).map(([m, d]) =>
-    `<div class="card-row" style="${parseInt(m)===currentMonth?'background:var(--primary-light)':''}">
-      <span class="card-row-label" style="${parseInt(m)===currentMonth?'color:var(--primary);font-weight:600':''}">2026년 ${m}월</span>
-      <span class="card-row-value" style="${parseInt(m)===currentMonth?'color:var(--primary)':''}">${toHM(d.req)}</span>
+  document.getElementById('monthly-ref').innerHTML = Object.entries(MONTHLY_DATA).map(([m,d])=>
+    `<div class="card-row" style="${parseInt(m)===cMonth?'background:var(--primary-light)':''}">
+      <span class="card-row-label" style="${parseInt(m)===cMonth?'color:var(--primary);font-weight:600':''}">2026년 ${m}월</span>
+      <span class="card-row-value" style="${parseInt(m)===cMonth?'color:var(--primary)':''}">${toHM(d.req)}</span>
     </div>`
   ).join('');
 
-  renderInputPage();
-  renderCalendar();
-  renderDoneList();
+  renderInput(); renderCal(); renderDone();
 }
 
-function renderInputPage() {
-  const workdays = getWorkdays();
-  const monthLogs = getMonthLogs();
-  const isCurrent = isCurrentMonth();
-  const isPast = isPastMonth();
-  const todayD = isCurrent ? TODAY_DATE : (isPast ? getDaysInMonth(currentYear, currentMonth)+1 : 0);
+function renderInput() {
+  const workdays=getWorkdays(), logs=getLogs();
+  const isCur=isCurMonth(), isPast=isPastMonth();
+  const todayD=isCur?TD:isPast?daysInMonth(cYear,cMonth)+1:0;
+  const titleEl=document.getElementById('input-section-title');
+  const bannerEl=document.getElementById('input-banner');
+  const listEl=document.getElementById('day-input-list');
+  const saveWrap=document.getElementById('save-btn-wrap');
 
-  const titleEl = document.getElementById('input-section-title');
-  const bannerEl = document.getElementById('input-banner');
-  const listEl = document.getElementById('day-input-list');
-  const saveBtnWrap = document.getElementById('save-btn-wrap');
-
-  if (!isCurrent && !isPast) {
-    titleEl.textContent = '미입력 날짜';
-    bannerEl.innerHTML = '<div class="banner banner-past">아직 시작되지 않은 달이에요.</div>';
-    listEl.innerHTML = '<div class="card"><div class="empty-state">미래 달은 입력할 수 없어요</div></div>';
-    saveBtnWrap.style.display = 'none';
-    return;
+  if(!isCur&&!isPast){
+    titleEl.textContent='미입력 날짜';
+    bannerEl.innerHTML='<div class="banner banner-past">아직 시작되지 않은 달이에요.</div>';
+    listEl.innerHTML='<div class="card"><div class="empty-state">미래 달은 입력할 수 없어요</div></div>';
+    saveWrap.style.display='none'; return;
   }
 
-  const pending = workdays.filter(d => d < todayD && monthLogs[d] === undefined);
-
-  if (!pending.length) {
-    titleEl.textContent = '미입력 날짜';
-    bannerEl.innerHTML = '<div class="banner banner-success">✓ 모든 출근일이 입력되었어요!</div>';
-    listEl.innerHTML = '<div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div>';
-    saveBtnWrap.style.display = 'none';
-    return;
+  const pending=workdays.filter(d=>d<todayD&&logs[d]===undefined);
+  if(!pending.length){
+    titleEl.textContent='미입력 날짜';
+    bannerEl.innerHTML='<div class="banner banner-success">✓ 모든 출근일이 입력되었어요!</div>';
+    listEl.innerHTML='<div class="card"><div class="empty-state">입력할 날짜가 없어요</div></div>';
+    saveWrap.style.display='none'; return;
   }
 
-  saveBtnWrap.style.display = 'block';
-  titleEl.textContent = `미입력 날짜 ${pending.length}일`;
-  bannerEl.innerHTML = '<div class="banner banner-info">날짜별 실제 근무시간을 입력해주세요.</div>';
-  listEl.innerHTML = pending.map((d, i) => {
-    const dow = DOW_LABELS[new Date(currentYear, currentMonth-1, d).getDay()];
-    const ex = monthLogs[d];
-    const eh = ex !== undefined ? Math.floor(ex/60) : '';
-    const em = ex !== undefined ? ex%60 : '';
-    const only = pending.length===1, first = i===0, last = i===pending.length-1;
-    const rad = only?'border-radius:var(--r-xl)':first?'border-radius:var(--r-xl) var(--r-xl) 0 0':last?'border-radius:0 0 var(--r-xl) var(--r-xl)':'border-radius:0';
+  saveWrap.style.display='block';
+  titleEl.textContent=`미입력 날짜 ${pending.length}일`;
+  bannerEl.innerHTML='<div class="banner banner-info">날짜별 실제 근무시간을 입력해주세요.</div>';
+  listEl.innerHTML=pending.map((d,i)=>{
+    const dow=DOW[new Date(cYear,cMonth-1,d).getDay()];
+    const ex=logs[d], eh=ex!==undefined?Math.floor(ex/60):'', em=ex!==undefined?ex%60:'';
+    const only=pending.length===1,first=i===0,last=i===pending.length-1;
+    const rad=only?'border-radius:var(--r-xl)':first?'border-radius:var(--r-xl) var(--r-xl) 0 0':last?'border-radius:0 0 var(--r-xl) var(--r-xl)':'border-radius:0';
     return `<div class="day-item" style="${rad}">
-      <div class="day-date"><div class="day-date-main">${currentMonth}/${d}</div><div class="day-date-sub">${dow}요일</div></div>
+      <div class="day-date"><div class="day-date-main">${cMonth}/${d}</div><div class="day-date-sub">${dow}요일</div></div>
       <div class="day-inputs">
-        <input class="day-inp" type="number" id="inp-h-${d}" placeholder="0" min="0" max="24" value="${eh}">
+        <input class="day-inp" type="number" id="ih-${d}" placeholder="0" min="0" max="24" value="${eh}">
         <span class="day-inp-label">시간</span>
-        <input class="day-inp" type="number" id="inp-m-${d}" placeholder="0" min="0" max="59" value="${em}">
+        <input class="day-inp" type="number" id="im-${d}" placeholder="0" min="0" max="59" value="${em}">
         <span class="day-inp-label">분</span>
       </div>
     </div>`;
   }).join('');
-  window._pendingDays = pending;
+  window._pending=pending;
 }
 
-async function saveAllLogs() {
-  const pending = window._pendingDays || []; let saved = 0;
-  for (const d of pending) {
-    const h = parseInt(document.getElementById(`inp-h-${d}`)?.value)||0;
-    const m = parseInt(document.getElementById(`inp-m-${d}`)?.value)||0;
-    if (h>0||m>0) {
-      const k = logKey(currentYear, currentMonth, d);
-      allLogs[k] = h*60+m;
-      await sb.from('work_logs').upsert({ user_id: currentUser.id, log_key: k, day: d, month: currentMonth, year: currentYear, minutes: h*60+m }, { onConflict: 'user_id,log_key' });
-      saved++;
-    }
+function saveAllLogs() {
+  const pending=window._pending||[], logs=getLogs(); let saved=0;
+  for(const d of pending){
+    const h=parseInt(document.getElementById(`ih-${d}`)?.value)||0;
+    const m=parseInt(document.getElementById(`im-${d}`)?.value)||0;
+    if(h>0||m>0){logs[d]=h*60+m;saved++;}
   }
-  showToast(saved>0 ? `✓ ${saved}일 저장되었습니다` : '입력된 시간이 없어요');
+  saveLogs(logs);
+  showToast(saved>0?`✓ ${saved}일 저장되었습니다`:'입력된 시간이 없어요');
   update();
 }
 
-function renderDoneList() {
-  const el = document.getElementById('done-list');
-  const monthLogs = getMonthLogs();
-  const entries = Object.entries(monthLogs).map(([d,m])=>({d:parseInt(d),m})).sort((a,b)=>b.d-a.d);
-  if (!entries.length) { el.innerHTML = '<div class="empty-state">아직 입력된 날이 없어요</div>'; return; }
-  el.innerHTML = entries.map(({d,m}) => {
-    const dow = DOW_LABELS[new Date(currentYear, currentMonth-1, d).getDay()];
+function renderDone() {
+  const el=document.getElementById('done-list'), logs=getLogs();
+  const entries=Object.entries(logs).map(([d,m])=>({d:parseInt(d),m})).sort((a,b)=>b.d-a.d);
+  if(!entries.length){el.innerHTML='<div class="empty-state">아직 입력된 날이 없어요</div>';return;}
+  el.innerHTML=entries.map(({d,m})=>{
+    const dow=DOW[new Date(cYear,cMonth-1,d).getDay()];
     return `<div class="done-item">
       <div class="done-dot"></div>
-      <div class="done-info"><div class="done-date">${currentMonth}/${d} ${dow}요일</div><div class="done-time">${toHM(m)}</div></div>
+      <div class="done-info"><div class="done-date">${cMonth}/${d} ${dow}요일</div><div class="done-time">${toHM(m)}</div></div>
       <button class="btn-sm" onclick="editDay(${d})">수정</button>
     </div>`;
   }).join('');
 }
 
-async function editDay(d) {
-  const k = logKey(currentYear, currentMonth, d);
-  delete allLogs[k];
-  await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('log_key', k);
-  update();
-  showPage('input', document.querySelectorAll('.nav-item')[1]);
+function editDay(d) {
+  const logs=getLogs(); delete logs[d]; saveLogs(logs);
+  update(); showPage('input',document.querySelectorAll('.nav-item')[1]);
 }
 
-async function toggleHoliday(d) {
-  if (isWeekend(d)) return;
-  const hk = holKey(currentYear, currentMonth);
-  if (!allHolidays[hk]) allHolidays[hk] = [];
-  const idx = allHolidays[hk].indexOf(d);
-  if (idx >= 0) { allHolidays[hk].splice(idx,1); showToast(`${currentMonth}/${d} 공휴일 해제`); }
+function toggleHoliday(d) {
+  if(isWeekend(d)) return;
+  const hols=getHols(), idx=hols.indexOf(d);
+  if(idx>=0){hols.splice(idx,1);showToast(`${cMonth}/${d} 공휴일 해제`);}
   else {
-    allHolidays[hk].push(d);
-    const k = logKey(currentYear, currentMonth, d);
-    if (allLogs[k] !== undefined) {
-      delete allLogs[k];
-      await sb.from('work_logs').delete().eq('user_id', currentUser.id).eq('log_key', k);
-    }
-    showToast(`${currentMonth}/${d} 공휴일로 지정`);
+    hols.push(d);
+    const logs=getLogs(); delete logs[d]; saveLogs(logs);
+    showToast(`${cMonth}/${d} 공휴일로 지정`);
   }
-  persistHolidays();
-  update();
+  saveHols(hols); update();
 }
 
-function renderCalendar() {
-  const header = document.getElementById('cal-header');
-  const body = document.getElementById('cal-body');
-  const monthLogs = getMonthLogs();
-  const isCurrent = isCurrentMonth();
-  const isPast = isPastMonth();
-  const todayD = isCurrent ? TODAY_DATE : (isPast ? getDaysInMonth(currentYear, currentMonth)+1 : 0);
+function renderCal() {
+  const header=document.getElementById('cal-header'), body=document.getElementById('cal-body');
+  const logs=getLogs(), isCur=isCurMonth(), isPast=isPastMonth();
+  const todayD=isCur?TD:isPast?daysInMonth(cYear,cMonth)+1:0;
 
-  header.innerHTML = DOW_LABELS.map((d,i)=>`<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`).join('');
+  header.innerHTML=DOW.map((d,i)=>`<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`).join('');
 
-  let html = '';
-  const firstDow = new Date(currentYear, currentMonth-1, 1).getDay();
-  const totalDays = getDaysInMonth(currentYear, currentMonth);
-  for (let i=0; i<firstDow; i++) html += `<div class="cal-cell"></div>`;
-
-  for (let d=1; d<=totalDays; d++) {
-    const dow = new Date(currentYear, currentMonth-1, d).getDay();
-    const weekend=isWeekend(d), holiday=isHoliday(d), workday=isWorkday(d);
-    const isPastDay = d < todayD, isToday = isCurrent && d===TODAY_DATE, hasLog = monthLogs[d]!==undefined;
-    let cls='cal-cell', extra='', oc='';
-    if (weekend) { cls+=` is-weekend ${dow===0?'sun':'sat'}`; }
-    else if (holiday) { cls+=' is-holiday workday'; extra='<div class="cal-mini">공휴</div>'; oc=`onclick="toggleHoliday(${d})"`; }
-    else if (isToday) { cls+=' is-today workday'; oc=`onclick="toggleHoliday(${d})"`; }
-    else if (isPastDay && hasLog) { cls+=' is-logged workday'; const h=Math.floor(monthLogs[d]/60),m=monthLogs[d]%60; extra=`<div class="cal-mini">${h}h${m>0?m+'m':''}</div>`; oc=`onclick="toggleHoliday(${d})"`; }
-    else if (isPastDay && workday) { cls+=' is-pending workday'; extra='<div class="cal-mini">미입력</div>'; oc=`onclick="toggleHoliday(${d})"`; }
-    else if (workday) { cls+=' is-future workday'; oc=`onclick="toggleHoliday(${d})"`; }
+  let html='';
+  const firstDow=new Date(cYear,cMonth-1,1).getDay(), total=daysInMonth(cYear,cMonth);
+  for(let i=0;i<firstDow;i++) html+=`<div class="cal-cell"></div>`;
+  for(let d=1;d<=total;d++){
+    const dow=new Date(cYear,cMonth-1,d).getDay();
+    const weekend=isWeekend(d),holiday=isHoliday(d),workday=isWorkday(d);
+    const isPastDay=d<todayD,isToday=isCur&&d===TD,hasLog=logs[d]!==undefined;
+    let cls='cal-cell',extra='',oc='';
+    if(weekend){cls+=` is-weekend ${dow===0?'sun':'sat'}`;}
+    else if(holiday){cls+=' is-holiday clickable';extra='<div class="cal-mini">공휴</div>';oc=`onclick="toggleHoliday(${d})"`;}
+    else if(isToday){cls+=' is-today clickable';oc=`onclick="toggleHoliday(${d})"`;}
+    else if(isPastDay&&hasLog){cls+=' is-logged clickable';const h=Math.floor(logs[d]/60),m=logs[d]%60;extra=`<div class="cal-mini">${h}h${m>0?m+'m':''}</div>`;oc=`onclick="toggleHoliday(${d})"`;}
+    else if(isPastDay&&workday){cls+=' is-pending clickable';extra='<div class="cal-mini">미입력</div>';oc=`onclick="toggleHoliday(${d})"`;}
+    else if(workday){cls+=' is-future clickable';oc=`onclick="toggleHoliday(${d})"`;}
     html+=`<div class="${cls}" ${oc}>${d}${extra}</div>`;
   }
-  body.innerHTML = html;
+  body.innerHTML=html;
 }
 
-function showPage(name, btn) {
+function showPage(name,btn) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name==='input') renderInputPage();
+  if(name==='input') renderInput();
 }
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { flowType: 'pkce', storage: window.localStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
-});
-init();
+update();
 </script>
 </body>
 </html>
